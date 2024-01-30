@@ -1,0 +1,60 @@
+{
+  "listConceptType": [
+    {
+      "id": "1",
+      "name": "Организация",
+      "listConceptPropertyType": [
+        {
+          "id": "11",
+          "name": "Название",
+          "valueType": {
+            "valueType": "String"
+          }
+        },
+        {
+          "id": "12",
+          "name": "Комментарий",
+          "valueType": {
+            "valueType": "String"
+          }
+        }
+      ],
+      "listConceptLinkType": []
+    },
+    {
+      "id": "2",
+      "name": "Персона",
+      "listConceptPropertyType": [
+        {
+          "id": "21",
+          "name": "Название",
+          "valueType": {
+            "valueType": "String"
+          }
+        },
+        {
+          "id": "22",
+          "name": "Комментарий",
+          "valueType": {
+            "valueType": "String"
+          }
+        }
+      ],
+      "listConceptLinkType": [
+        {
+          "id": "21",
+          "name": "Работает в",
+          "conceptFromType": {
+            "id": "2",
+            "name": "Персона"
+          },
+          "conceptToType": {
+            "id": "1",
+            "name": "Организация"
+          },
+          "listConceptLinkPropertyType": []
+        }
+      ]
+    }
+  ]
+}

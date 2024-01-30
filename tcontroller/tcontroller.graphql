@@ -1,0 +1,769 @@
+type ActiveMessageList {
+  messages: [ActiveMessageStatus!]!
+  total: Int!
+}
+
+type ActiveMessageStatus {
+  id: ID!
+  info: MessageInProgress!
+}
+
+type CompletedOkMessageList {
+  messages: [CompletedOkMessageStatus!]!
+  total: Int!
+}
+
+type CompletedOkMessageStatus {
+  id: ID!
+  info: MessageOk!
+}
+
+type ConceptTransformConfig implements RecordInterface {
+  id: ID!
+  title: String!
+  description: String
+  conceptTypeIds: [ID!]
+  canTransformOneEntity: Boolean!
+  canTransformMultipleEntities: Boolean!
+  transforms: [PipelineTransformSetup!]!
+  lastTaskTime: UnixTime
+  metrics: KafkaTopicMetrics!
+  priority: Int!
+  deleted: Boolean!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  creator: User!
+  lastUpdater: User
+}
+
+input ConceptTransformConfigFilter {
+  systemRegistrationDate: TimestampInterval
+  systemUpdateDate: TimestampInterval
+  creatorId: ID
+  lastUpdaterId: ID
+  description: String
+  canTransformOneEntity: Boolean
+  canTransformMultipleEntities: Boolean
+  canTransformConceptTypeIds: [ID!]
+  canBeUsed: Boolean
+}
+
+input ConceptTransformConfigInput {
+  title: String!
+  description: String
+  conceptTypeIds: [ID!]
+  canTransformOneEntity: Boolean!
+  canTransformMultipleEntities: Boolean!
+  priority: Int
+}
+
+type ConceptTransformConfigList {
+  configs: [ConceptTransformConfig!]!
+  total: Int!
+}
+
+enum ConceptTransformConfigSort {
+  systemUpdateDate
+  systemRegistrationDate
+  description
+  id
+}
+
+type ConceptTransformResults {
+  concepts: [ID!]
+  error: String
+}
+
+type ConceptTransformTask implements RecordInterface {
+  id: ID!
+  conceptIds: [ID!]!
+  state: ConceptTransformTaskState!
+  active: Boolean!
+  result: ConceptTransformResults
+  config: ConceptTransformConfig
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  creator: User!
+  lastUpdater: User
+}
+
+input ConceptTransformTaskFilter {
+  config: ID
+  creatorId: ID
+  state: ConceptTransformTaskState
+  id: ID
+  systemRegistrationDate: TimestampInterval
+}
+
+input ConceptTransformTaskInput {
+  config: ID!
+  conceptIds: [ID!]!
+}
+
+type ConceptTransformTaskList {
+  tasks: [ConceptTransformTask!]!
+  total: Int!
+}
+
+enum ConceptTransformTaskSort {
+  state
+  config
+  createTime
+}
+
+enum ConceptTransformTaskState {
+  failed
+  ok
+  pending
+}
+
+type DuplicateMessageList {
+  messages: [DuplicateMessageStatus!]!
+  total: Int!
+}
+
+type DuplicateMessageStatus {
+  id: ID!
+  info: MessageDuplicate!
+}
+
+type ExportEntity {
+  type: ExportEntityType!
+  id: ID!
+}
+
+input ExportEntityInput {
+  type: ExportEntityType!
+  id: ID!
+}
+
+enum ExportEntityType {
+  document
+  concept
+}
+
+type Exporter implements RecordInterface {
+  id: ID!
+  title: String!
+  menuTitle: String!
+  description: String!
+  paramsSchema: ParamsSchema!
+  defaultParamsSchema: ParamsSchema!
+  defaultParams: JSON!
+  conceptTypeIds: [ID!]
+  canExportDocument: Boolean!
+  canExportConcept: Boolean!
+  canExportOneEntity: Boolean!
+  canExportMultipleEntities: Boolean!
+  lastTaskTime: UnixTime
+  metrics: KafkaTopicMetrics!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  creator: User!
+  lastUpdater: User
+}
+
+input ExporterFilter {
+  canExportDocument: Boolean
+  canExportConcept: Boolean
+  canExportOneEntity: Boolean
+  canExportMultipleEntities: Boolean
+  canExportConceptTypeIds: [ID!]
+}
+
+input ExporterInput {
+  menuTitle: String!
+  description: String!
+
+  """not changed if null"""
+  defaultParams: JSON
+  canExportOneEntity: Boolean!
+  canExportMultipleEntities: Boolean!
+  conceptTypeIds: [ID!]
+}
+
+type ExporterList {
+  exporters: [Exporter!]!
+  total: Int!
+}
+
+enum ExporterSort {
+  id
+}
+
+type ExportResults {
+  file: String
+  message: String
+  error: String
+}
+
+type ExportTask implements RecordInterface {
+  id: ID!
+  entities: [ExportEntity!]!
+  params: JSON!
+  state: ExportTaskState!
+  active: Boolean!
+  result: ExportResults
+  createTime: UnixTime!
+  exporter: Exporter
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  creator: User!
+  lastUpdater: User
+}
+
+input ExportTaskFilter {
+  exporter: ID
+  creatorId: ID
+  state: ExportTaskState
+  id: ID
+  systemRegistrationDate: TimestampInterval
+}
+
+input ExportTaskInput {
+  entities: [ExportEntityInput!]!
+  params: JSON!
+}
+
+type ExportTaskList {
+  tasks: [ExportTask!]!
+  total: Int!
+}
+
+enum ExportTaskSort {
+  state
+  exporter
+  createTime
+}
+
+enum ExportTaskState {
+  failed
+  ok
+  pending
+}
+
+type FailedMessageList {
+  messages: [MessageStatus!]!
+  total: Int!
+}
+
+type Item {
+  job_id: String!
+  timestamp: UnixTime!
+  _uuid: ID!
+  _url: String
+  id: String
+  attachmentsNum: Int!
+  status: MessageStatus!
+  item: JSON!
+}
+
+input ItemsFilter {
+  inputText: String
+  interval: TimestampInterval
+  topic: String
+}
+
+type ItemsList {
+  total: Long!
+  items: [Item!]!
+}
+
+enum ItemsSort {
+  topic
+  timestamp
+}
+
+type JobIds {
+  jobId: ID
+  taskId: ID
+  periodicJobId: ID
+  periodicTaskId: ID
+}
+
+type JobMetrics {
+  jobId: ID!
+  metrics: MessageMetrics!
+}
+
+scalar JSON
+
+type KafkaTopic implements RecordInterface {
+  topic: ID!
+  description: String
+  pipeline: PipelineSetup
+  metrics: KafkaTopicMetrics!
+  priority: Int!
+  requestTimeoutMs: Int
+  moveToOnTimeout: String
+  systemTopic: Boolean!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  creator: User!
+  lastUpdater: User
+}
+
+input KafkaTopicFilter {
+  name: String
+  systemRegistrationDate: TimestampInterval
+  systemUpdateDate: TimestampInterval
+  creatorId: ID
+  lastUpdaterId: ID
+  description: String
+  pipelineConfig: ID
+  pipelineConfigDescription: String
+}
+
+type KafkaTopicList {
+  topics: [KafkaTopic!]!
+  total: Int!
+}
+
+type KafkaTopicMetrics {
+  messages: Long!
+  lag: Long! @deprecated(reason: "use pending instead")
+  activeMessages: Long!
+  pipelineIsActive: Boolean!
+  failed: Int!
+  ok: Int!
+  okCumulative: Int!
+  duplicate: Int!
+  pending: Int!
+}
+
+enum KafkaTopicSort {
+  systemUpdateDate
+  systemRegistrationDate
+  duplicateMessages
+  failedMessages
+  okMessages
+  activeMessages
+  pendingMessages
+  priority
+  configDescription
+  configId
+  description
+  topic
+}
+
+input KafkaTopicUpdate {
+  description: String
+  clearDescription: Boolean = false
+  pipeline: PipelineSetupInput
+  clearPipeline: Boolean = false
+  priority: Int
+  requestTimeoutMs: Int
+  clearRequestTimeoutMs: Boolean = false
+  moveToOnTimeout: String
+  clearMoveToOnTimeout: Boolean = false
+}
+
+"""
+The `Long` scalar type represents non-fractional signed whole numeric values.
+Long can represent values between -(2^63) and 2^63 - 1.
+"""
+scalar Long
+
+type MessageDuplicate {
+  createTime: UnixTime!
+  startTime: UnixTime!
+  finishTime: UnixTime!
+  topic: ID!
+  result: String
+  originalId: String!
+  deleted: Boolean!
+  message: JSON!
+}
+
+type MessageError {
+  description: String!
+}
+
+type MessageFailed {
+  createTime: UnixTime!
+  startTime: UnixTime!
+  finishTime: UnixTime!
+  topic: ID!
+  stage: PipelineTransformSetup!
+  error: MessageError!
+  deleted: Boolean!
+  duplicateOf: String
+  message: JSON!
+}
+
+input MessageFilter {
+  id: String
+  inputText: String
+  parentId: String
+  parentOrSelfId: String
+}
+
+type MessageInProgress {
+  createTime: UnixTime!
+  startTime: UnixTime!
+  topic: ID!
+  stage: PipelineTransformSetup!
+  message: JSON!
+}
+
+type MessageList {
+  messages: [MessageStatus!]!
+  total: Int!
+}
+
+type MessageMetrics {
+  pending: Int!
+  failed: Int!
+  ok: Int!
+  duplicate: Int!
+}
+
+type MessageNotHandled {
+  createTime: UnixTime!
+  topic: ID!
+  notHandled: Boolean!
+  message: JSON!
+}
+
+type MessageOk {
+  createTime: UnixTime!
+  startTime: UnixTime!
+  finishTime: UnixTime!
+  topic: ID!
+  result: String
+  deleted: Boolean!
+  message: JSON!
+}
+
+enum MessageSort {
+  timestamp
+}
+
+"""Pipeline message status."""
+type MessageStatus {
+  id: ID!
+  info: MessageStatusInfo!
+}
+
+union MessageStatusInfo = MessageOk | MessageFailed | MessageDuplicate | MessageInProgress | MessageNotHandled | MessageUnknown
+
+type MessageUnknown {
+  unknown: Boolean!
+}
+
+type Mutation {
+  addPipelineConfig(description: String!, transforms: [PipelineTransformSetupInput!]!): PipelineConfig!
+  copyPipelineConfig(sourceId: ID!, description: String): PipelineConfig!
+  importPipelineConfig(export: Upload!): PipelineConfig!
+  updatePipelineConfig(pipelineConfig: PipelineConfigInput!): PipelineConfig!
+  deletePipelineConfig(id: ID!): PipelineConfig!
+  putKafkaTopic(
+    topic: ID!
+    description: String
+
+    """pipeline will be stopped if not set"""
+    pipeline: PipelineSetupInput
+    priority: Int = 0
+    requestTimeoutMs: Int
+    moveToOnTimeout: String
+  ): KafkaTopic!
+  updateKafkaTopics(topics: [ID!]!, update: KafkaTopicUpdate!): Int!
+  deleteKafkaTopic(topic: ID!): KafkaTopic!
+  retryFailedInTopic(topic: ID!): Int!
+  retryFailedMessage(id: String!): Int!
+  copyPendingToKafka(topic: ID!): Int!
+  reprocessMessage(messageId: ID!, topic: ID): ID!
+  reprocessMessages(messageIds: [ID!]!, topic: ID): [ID!]!
+  updateExporter(id: ID!, data: ExporterInput!): Exporter!
+  addExporterTask(exporter: ID!, task: ExportTaskInput!): ID!
+  cancelExportTask(taskId: ID!): ExportTask!
+  addConceptTransformConfig(conceptTransform: ConceptTransformConfigInput!): ConceptTransformConfig!
+  copyConceptTransformConfig(sourceId: ID!, title: String): ConceptTransformConfig!
+  updateConceptTransformConfig(id: ID!, conceptTransform: ConceptTransformConfigInput!): ConceptTransformConfig!
+  updateConceptTransformConfigTransforms(id: ID!, transforms: [PipelineTransformSetupInput!]!): ConceptTransformConfig!
+  deleteConceptTransformConfig(id: ID!): ConceptTransformConfig!
+  addConceptTransformTask(task: ConceptTransformTaskInput!): ID!
+  cancelConceptTransformTask(id: ID!): ConceptTransformTask!
+  addUserPipelineTransform(description: String, serviceImage: Upload, service: UserServiceInput): UserPipelineTransform!
+  updateUserPipelineTransform(id: ID!, description: String, serviceImage: Upload, service: UserServiceInput): UserPipelineTransform!
+  deleteUserPipelineTransform(id: ID!): UserPipelineTransform!
+  serviceStats(reset: Boolean = false): [ServiceStats!]!
+}
+
+type ParamsSchema {
+  schema: JSON!
+  uiSchema: JSON
+}
+
+type PendingMessageList {
+  messages: [PendingMessageStatus!]!
+  total: Int!
+}
+
+"""Pipeline message status."""
+type PendingMessageStatus {
+  id: ID!
+  info: PendingMessageStatusInfo!
+}
+
+union PendingMessageStatusInfo = MessageInProgress | MessageNotHandled
+
+type PeriodicJobMetrics {
+  periodicJobId: ID!
+  metrics: MessageMetrics!
+}
+
+type PeriodicTaskMetrics {
+  periodicTaskId: ID!
+  metrics: MessageMetrics!
+}
+
+type PipelineConfig implements RecordInterface {
+  id: ID!
+  description: String!
+  transforms: [PipelineTransformSetup!]!
+  transformCount: Int!
+  usedInTopics: Int!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  creator: User!
+  lastUpdater: User
+}
+
+input PipelineConfigFilter {
+  inType: String
+  systemRegistrationDate: TimestampInterval
+  systemUpdateDate: TimestampInterval
+  creatorId: ID
+  lastUpdaterId: ID
+  description: String
+  hasTransform: ID
+
+  """
+  matches if config contains any one of transforms, but empty list is equivalent to null
+  """
+  hasTransforms: [ID!]
+}
+
+input PipelineConfigInput {
+  id: ID!
+  description: String!
+  transforms: [PipelineTransformSetupInput!]!
+}
+
+type PipelineConfigList {
+  pipelineConfigs: [PipelineConfig!]!
+  total: Int!
+}
+
+enum PipelineConfigSort {
+  systemUpdateDate
+  systemRegistrationDate
+  description
+  id
+}
+
+type PipelineSetup {
+  pipelineConfig: PipelineConfig!
+}
+
+input PipelineSetupInput {
+  pipelineConfig: ID!
+}
+
+type PipelineTransform {
+  id: ID!
+  description: String!
+  inType: String!
+  outType: String!
+  paramsSchema: ParamsSchema!
+  version: String
+}
+
+input PipelineTransformFilter {
+  inType: String
+}
+
+type PipelineTransformList {
+  transforms: [PipelineTransform!]!
+  total: Int!
+}
+
+type PipelineTransformSetup {
+  id: ID!
+
+  """JSON as string"""
+  params: JSON!
+  transform: PipelineTransform!
+}
+
+input PipelineTransformSetupInput {
+  id: ID!
+
+  """JSON as string"""
+  params: JSON!
+}
+
+type Query {
+  pipelineTransforms(offset: Int, limit: Int, filter: PipelineTransformFilter): PipelineTransformList!
+  pipelineTransform(id: ID!): PipelineTransform!
+  pipelineConfigs(offset: Int, limit: Int, filter: PipelineConfigFilter, sortBy: PipelineConfigSort = id, sortDirection: SortDirection = ascending): PipelineConfigList!
+  pipelineConfig(id: ID!): PipelineConfig!
+  exportPipelineConfig(id: ID!): JSON!
+  kafkaPipelineStartType: String!
+  kafkaTopics(offset: Int, limit: Int, filter: KafkaTopicFilter, sortBy: KafkaTopicSort = topic, sortDirection: SortDirection = ascending): KafkaTopicList!
+  kafkaTopic(topic: ID!): KafkaTopic!
+  messageStatus(id: ID!): MessageStatus!
+  messageTopic(id: ID!): ID
+  messageStatuses(ids: [ID!]!): [MessageStatus!]!
+  failedMessages(topic: ID!, offset: Int, limit: Int, sortBy: MessageSort = timestamp, sortDirection: SortDirection = descending, filter: MessageFilter): FailedMessageList!
+  pendingMessages(topic: ID!, offset: Int, limit: Int, sortBy: ItemsSort = timestamp, sortDirection: SortDirection = descending, filter: MessageFilter): PendingMessageList!
+  activeMessages(topic: ID, offset: Int, limit: Int, sortBy: ItemsSort = timestamp, sortDirection: SortDirection = descending, filter: MessageFilter): ActiveMessageList!
+  completedOkMessages(topic: ID!, offset: Int, limit: Int, sortBy: MessageSort = timestamp, sortDirection: SortDirection = descending, filter: MessageFilter): CompletedOkMessageList!
+  duplicateMessages(topic: ID!, offset: Int, limit: Int, sortBy: MessageSort = timestamp, sortDirection: SortDirection = descending, filter: MessageFilter): DuplicateMessageList!
+  messagesByParentId(parentId: ID!, offset: Int, limit: Int, sortBy: ItemsSort = timestamp, sortDirection: SortDirection = descending, filter: MessageFilter): MessageList!
+  exporter(id: ID!): Exporter!
+  exporters(offset: Int, limit: Int, sortBy: ExporterSort = id, sortDirection: SortDirection = ascending, filter: ExporterFilter): ExporterList!
+  exportTask(id: ID!): ExportTask!
+  exportTasks(offset: Int, limit: Int, sortBy: ExportTaskSort = createTime, sortDirection: SortDirection = descending, filter: ExportTaskFilter): ExportTaskList!
+  jobItems2(id: ID!, itemsFilter: ItemsFilter = {inputText: null, interval: null, topic: null}, itemsSort: ItemsSort = timestamp, limit: Int = 10, offset: Int = 0, sortDirection: SortDirection = descending): ItemsList!
+  periodicJobItems2(id: ID!, itemsFilter: ItemsFilter = {inputText: null, interval: null, topic: null}, itemsSort: ItemsSort = timestamp, limit: Int = 10, offset: Int = 0, sortDirection: SortDirection = descending): ItemsList!
+  taskItems2(id: ID!, itemsFilter: ItemsFilter = {inputText: null, interval: null, topic: null}, itemsSort: ItemsSort = timestamp, limit: Int = 10, offset: Int = 0, sortDirection: SortDirection = descending): ItemsList!
+  periodicTaskItems2(id: ID!, itemsFilter: ItemsFilter = {inputText: null, interval: null, topic: null}, itemsSort: ItemsSort = timestamp, limit: Int = 10, offset: Int = 0, sortDirection: SortDirection = descending): ItemsList!
+  jobIdsByMessageUUID2(messageUUID: ID!): JobIds
+  jobMetrics2(jobIds: [ID!]!): [JobMetrics!]!
+  periodicJobMetrics2(periodicJobIds: [ID!]!): [PeriodicJobMetrics!]!
+  taskMetrics2(taskIds: [ID!]!): [TaskMetrics!]!
+  periodicTaskMetrics2(periodicTaskIds: [ID!]!): [PeriodicTaskMetrics!]!
+  conceptTransformConfigs(offset: Int, limit: Int, filter: ConceptTransformConfigFilter, sortBy: ConceptTransformConfigSort = id, sortDirection: SortDirection = ascending): ConceptTransformConfigList!
+  conceptTransformConfig(id: ID!): ConceptTransformConfig!
+  conceptTransformMessageType: String!
+  conceptTransformTask(id: ID!): ConceptTransformTask!
+  conceptTransformTasks(offset: Int, limit: Int, sortBy: ConceptTransformTaskSort = createTime, sortDirection: SortDirection = descending, filter: ConceptTransformTaskFilter): ConceptTransformTaskList!
+  userPipelineTransforms(offset: Int, limit: Int, sortBy: UserPipelineTransformSort = id, sortDirection: SortDirection = descending, filter: UserPipelineTransformFilter): UserPipelineTransformList!
+  userPipelineTransform(id: ID!): UserPipelineTransform!
+}
+
+"""common part of all records"""
+interface RecordInterface {
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  creator: User!
+  lastUpdater: User
+}
+
+type ServiceStats {
+  name: String!
+
+  """duration in seconds"""
+  duration: Float!
+
+  """total load in seconds for the duration"""
+  load: Float!
+  okRequests: Int!
+  failedRequests: Int!
+}
+
+enum SortDirection {
+  ascending
+  descending
+}
+
+type TaskMetrics {
+  taskId: ID!
+  metrics: MessageMetrics!
+}
+
+input TimestampInterval {
+  start: UnixTime
+  end: UnixTime
+}
+
+scalar UnixTime
+
+scalar Upload
+
+type User {
+  id: ID!
+}
+
+type UserPipelineTransform implements RecordInterface {
+  id: ID!
+  description: String
+  inType: String!
+  outType: String!
+  usedInPipelineConfigs: Int!
+  version: String
+  service: UserService!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  creator: User!
+  lastUpdater: User
+}
+
+input UserPipelineTransformFilter {
+  inType: String
+}
+
+type UserPipelineTransformList {
+  transforms: [UserPipelineTransform!]!
+  total: Int!
+}
+
+enum UserPipelineTransformSort {
+  state
+  systemUpdateDate
+  systemRegistrationDate
+  description
+  id
+}
+
+type UserService {
+  """memory limit in MB"""
+  memLimit: Int
+
+  """memory request in MB"""
+  memRequest: Int
+
+  """cpu limit in millicores"""
+  cpuLimit: Int
+
+  """cpu request in millicores"""
+  cpuRequest: Int
+  maxPods: Int!
+  state: UserServiceState!
+  environment: [UserServiceEnvironmentVariable!]
+}
+
+type UserServiceEnvironmentVariable {
+  name: String!
+  value: String!
+}
+
+input UserServiceEnvironmentVariableInput {
+  name: String!
+  value: String!
+}
+
+input UserServiceInput {
+  """memory limit in MB"""
+  memLimit: Int
+
+  """memory request in MB"""
+  memRequest: Int
+
+  """cpu limit in millicores"""
+  cpuLimit: Int
+
+  """cpu request in millicores"""
+  cpuRequest: Int
+  maxPods: Int = 1
+  environment: [UserServiceEnvironmentVariableInput!]
+}
+
+enum UserServiceState {
+  buildFailed
+  ready
+  imageNotReady
+  noImage
+}

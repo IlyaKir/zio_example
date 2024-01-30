@@ -1,0 +1,65 @@
+version: "3.7"
+
+services:
+  pg:
+    image: postgres:9.6
+    container_name: "postgres"
+    environment:
+      POSTGRES_PASSWORD: ${JDBC_DATABASE_PASSWORD}
+      POSTGRES_USER: ${JDBC_DATABASE_USER}
+      POSTGRES_MULTIPLE_DATABASES: connector
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 1s
+      timeout: 1s
+      retries: 50
+    ports:
+      - "5432:5432"
+    command: "-c max_connections=200"
+
+  api:
+    image: "docker.io/hseeberger/scala-sbt:11.0.14.1_1.6.2_2.12.15"
+    container_name: "api"
+    ports:
+      - "9000:9000"
+      - "5005:5005" # debug
+    volumes:
+      - ./app:/root/app:rw
+      - ./modules:/root/modules:rw
+      - ./conf:/root/conf:rw
+      - ./public:/root/public:rw
+      - ./project/build.properties:/root/project/build.properties:rw
+      - ./project/Dependencies.scala:/root/project/Dependencies.scala:rw
+      - ./project/plugins.sbt:/root/project/plugins.sbt:rw
+      - ./build.sbt:/root/build.sbt:rw
+      - ./.sbt-repositories:/root/.sbt-repositories:rw
+      - ./target:/root/target
+      - ./test:/root/test:rw
+      - ~/.ivy2/:/root/.ivy2:rw
+      - ~/.cache:/root/.cache:rw
+      - ~/.sbt:/root/.sbt:rw
+      - ./.env:/root/.env:rw
+    command: [ "sh", "-c", 'sbt update compile && sbt -jvm-debug *:5005 run' ]
+    depends_on:
+      - pg
+    environment:
+      SBT_OPTS: "-Xmx8G -XX:+CMSClassUnloadingEnabled -Xss1000M -Duser.timezone=GMT -Dplay.server.http.idleTimeout=24h"
+      PROD: unittest
+    tty: true
+
+  minio:
+    image: "docker.io/minio/minio"
+    container_name: "minio"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9999/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    environment:
+      MINIO_ROOT_USER: $S3_ACCESS_KEY
+      MINIO_ROOT_PASSWORD: $S3_SECRET_KEY
+    ports:
+      - "9999:9999"
+    restart: always
+    command: server /data --console-address ":9999"

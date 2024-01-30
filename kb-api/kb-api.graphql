@@ -1,0 +1,3176 @@
+type AccessLevel {
+  id: ID!
+  name: String!
+  order: Long!
+}
+
+input AccessLevelCreationInput {
+  name: String!
+  order: Long
+}
+
+type AccessLevelPagination {
+  listAccessLevel: [AccessLevel!]!
+  total: Int!
+}
+
+enum AccessLevelSorting {
+  order
+  name
+  id
+}
+
+input AccessLevelUpdateInput {
+  name: String!
+}
+
+type Account implements RecordInterface {
+  """key"""
+  id: ID!
+  name: String!
+  url: String!
+  country: String
+  markers: [String!]!
+  params: [Parameter!]!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  platform: Platform!
+  image: Image
+  metric: AccountStatistics!
+  period: DateTimeInterval!
+  creator: User!
+  lastUpdater: User
+}
+
+input AccountCreationInput {
+  """platform key"""
+  platformId: ID!
+  name: String!
+  id: ID!
+  url: String!
+  country: String
+  markers: [String!]
+  params: [ParameterInput!]
+}
+
+type AccountFacet {
+  value: Account!
+  count: Long!
+}
+
+input AccountFilterSettings {
+  searchString: String
+  platformId: [ID!]
+  id: ID
+  country: [String!]
+  markers: [String!]
+  creator: [ID!]
+  lastUpdater: [ID!]
+  registrationDate: TimestampInterval
+  updateDate: TimestampInterval
+}
+
+type AccountPagination {
+  listAccount: [Account!]!
+  total: Int!
+  totalPlatforms: Int!
+}
+
+enum AccountSorting {
+  lastUpdater
+  creator
+  systemUpdateDate
+  systemRegistrationDate
+  platformId
+  url
+  name
+  id
+}
+
+type AccountStatistics {
+  countDoc: Int!
+  countDocToday: Int!
+  countDocWeek: Int!
+  countDocMonth: Int!
+  recallDocToday: DocumentRecall!
+  recallDocWeek: DocumentRecall!
+  recallDocMonth: DocumentRecall!
+}
+
+input AccountUpdateInput {
+  accountId: ID!
+
+  """platform key"""
+  platformId: ID!
+  name: String!
+  newId: ID!
+  url: String!
+  country: String
+  markers: [String!]!
+  params: [ParameterInput!]!
+}
+
+enum AggregationFunction {
+  weekly
+  monthly
+  daily
+}
+
+type Annotation {
+  start: Int!
+  end: Int!
+  value: String!
+}
+
+union AnyValue = DateTimeValue | GeoPointValue | IntValue | DoubleValue | StringLocaleValue | StringValue | LinkValue | CompositeValue
+
+union AnyValueType = ConceptPropertyValueType | CompositePropertyValueTemplate
+
+type Autocomplete {
+  autocomplete: [String!]!
+}
+
+enum AutocompleteConceptDestination {
+  markers
+}
+
+enum AutocompleteDocumentDestination {
+  markers
+  links
+}
+
+input BulkMarkersInput {
+  ids: [ID!]!
+  bulkType: BulkType!
+}
+
+input BulkMarkersUpdateInput {
+  ids: [ID!]!
+  bulkType: BulkType!
+  markersToDelete: [String!]!
+  markersToAdd: [String!]!
+}
+
+enum BulkType {
+  account
+  platform
+  map
+  issue
+  document
+  concept
+}
+
+type Chart {
+  id: ID!
+  description: ChartDescription!
+  data: [ChartData!]!
+}
+
+type ChartData {
+  x: String!
+  y: Long!
+}
+
+type ChartDescription {
+  chartType: ChartType!
+  target: ChartTarget!
+  query: String!
+  aggregationField: String!
+  aggregationFunction: AggregationFunction
+  outputLimiter: OutputLimiter!
+}
+
+input ChartDescriptionInput {
+  chartType: ChartType!
+  target: ChartTarget!
+  query: String!
+  aggregationField: String!
+  aggregationFunction: AggregationFunction
+  outputLimiter: OutputLimiterInput!
+}
+
+enum ChartTarget {
+  document
+}
+
+enum ChartType {
+  line
+}
+
+input Comment2IssueInput {
+  idIssue: ID!
+  comment: String!
+}
+
+type CommonStringPagination {
+  total: Int!
+  listString: [String!]!
+}
+
+input ComponentValueInput {
+  """Required for composite property component"""
+  id: ID
+  value: ValueInput!
+}
+
+enum ComponentView {
+  value
+  keyValue
+}
+
+type CompositeConcept {
+  rootConcept: Concept!
+  compositeConceptType: CompositeConceptType!
+  id: ID!
+  listConcepts: [Concept!]!
+  paginateSingleWidget(widgetTypeId: ID!, offset: Int = 0, limit: Int = 20): CompositeConceptWidgetRowPagination!
+  paginationConceptMention(offset: Int = 0, limit: Int = 20, filterSettings: DocumentLinkFilterSetting!): ConceptFactPagination
+  listConceptMention: [ConceptFact!]
+}
+
+input CompositeConceptFilterSettings {
+  propertyFilterSettings: [PropertyFilterSettings!]
+  linkFilterSettings: [LinkFilterSettings!]
+  conceptVariant: [ConceptVariant!]
+  name: String
+  exactName: String
+  substring: String
+  accessLevelId: ID
+  creator: [ID!]
+  lastUpdater: [ID!]
+
+  """Creation date [start; end]"""
+  creationDate: TimestampInterval
+
+  """Latest update date [start; end]"""
+  updateDate: TimestampInterval
+  markers: [String!]
+  hasLinkedIssues: Boolean
+  compositeConceptTypeIds: [ID!]!
+}
+
+type CompositeConceptPagination {
+  listCompositeConcept: [CompositeConcept!]!
+  total: Long!
+}
+
+type CompositeConceptStatistics {
+  """number of conceptTypes compositeConceptType consists of"""
+  countConceptTypes: Int!
+}
+
+type CompositeConceptType implements RecordInterface {
+  id: ID!
+  name: String!
+  rootConceptType: ConceptType!
+  isDefault: Boolean!
+  layout: String!
+  hasSupportingDocuments: Boolean!
+  hasHeaderInformation: Boolean!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  metric: CompositeConceptStatistics!
+  paginationWidgetType(limit: Int = 20, offset: Int = 0, sortDirection: SortDirection = ascending, sorting: CompositeConceptTypeWidgetTypeSorting = order): CompositeConceptTypeWidgetTypePagination!
+  listWidgetType: [CompositeConceptTypeWidgetType!]!
+  listConceptLinkTypesCompositeConceptTypeConsistsOf: [ConceptLinkType!]!
+  showInMenu: Boolean!
+  creator: User!
+  lastUpdater: User
+}
+
+input CompositeConceptTypeCreationInput {
+  name: String!
+  rootConceptTypeId: ID!
+  isDefault: Boolean = false
+  layout: String = ""
+  hasSupportingDocuments: Boolean = false
+  hasHeaderInformation: Boolean = false
+  showInMenu: Boolean = false
+}
+
+input CompositeConceptTypeFilterSettings {
+  name: String
+  creator: [ID!]
+  lastUpdater: [ID!]
+  registrationDate: TimestampInterval
+  updateDate: TimestampInterval
+}
+
+type CompositeConceptTypePagination {
+  listCompositeConceptType: [CompositeConceptType!]!
+  total: Int!
+}
+
+enum CompositeConceptTypeSorting {
+  name
+  id
+}
+
+input CompositeConceptTypeUpdateInput {
+  id: ID!
+  name: String!
+  isDefault: Boolean = false
+  layout: String = ""
+  hasSupportingDocuments: Boolean = false
+  hasHeaderInformation: Boolean = false
+  showInMenu: Boolean = false
+}
+
+input CompositeConceptTypeViewInput {
+  conceptTypeId: ID!
+
+  """
+  if value is defined, then concept card will be displayed as composite concept card; otherwise as concept card
+  """
+  compositeConceptTypeId: ID
+}
+
+type CompositeConceptTypeWidgetType implements RecordInterface {
+  id: ID!
+  name: String!
+  tableType: WidgetTypeTableType!
+  compositeConceptType: CompositeConceptType!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  hierarchy: [[ConceptLinkTypePath!]!]!
+  columnsInfo: [CompositeConceptTypeWidgetTypeColumn!]!
+  creator: User!
+  lastUpdater: User
+}
+
+type CompositeConceptTypeWidgetTypeColumn {
+  id: ID!
+  name: String!
+  isMainProperties: Boolean!
+  listValues: Boolean!
+
+  """used only in concept type view"""
+  sortByColumn: Boolean!
+
+  """used only in concept type view"""
+  sortDirection: SortDirection
+
+  """
+  link types with directions; path from root conceptType to conceptType with propertyType
+  """
+  conceptLinkTypesPath: [ConceptLinkTypePath!]!
+  propertyType: ConceptPropertyType
+  metadata: ConceptTypeMetadata
+  linkPropertyType: ConceptPropertyType
+  linkMetadata: ConceptTypeLinkMetadata
+
+  """used only in concept type view"""
+  sortable: Boolean!
+}
+
+input CompositeConceptTypeWidgetTypeColumnInput {
+  name: String!
+
+  """return only mainProperty values"""
+  isMainProperties: Boolean = false
+
+  """
+  return all property values in one cell separated by commas; otherwise one value in one cell
+  """
+  listValues: Boolean = false
+
+  """
+  link type ids with directions; path from root conceptType to conceptType with propertyType/metadata; if empty then root
+  """
+  conceptLinkTypeIdsPath: [ConceptLinkTypePathInput!] = []
+
+  """
+  used only in concept type view; sort by this column (true should be set only for one column in the view)
+  """
+  sortByColumn: Boolean = false
+
+  """used only in concept type view"""
+  sortDirection: SortDirection
+
+  """
+  only one field must be filled; otherwise an exception 'InputError' will occur
+  """
+  valueInfo: CompositeConceptTypeWidgetTypeColumnValueInfoInput!
+}
+
+input CompositeConceptTypeWidgetTypeColumnValueInfoInput {
+  propertyTypeId: ID
+
+  """select the metadata in case you want to see concept's field value"""
+  metadata: ConceptTypeMetadata
+  linkPropertyTypeId: ID
+
+  """
+  select the link metadata in case you want to see conceptLink's field value
+  """
+  linkMetadata: ConceptTypeLinkMetadata
+}
+
+input CompositeConceptTypeWidgetTypeCreationInput {
+  name: String!
+  tableType: WidgetTypeTableType!
+  compositeConceptTypeId: ID!
+  columns: [CompositeConceptTypeWidgetTypeColumnInput!]!
+}
+
+type CompositeConceptTypeWidgetTypePagination {
+  listCompositeConceptTypeWidget: [CompositeConceptTypeWidgetType!]!
+  total: Int!
+}
+
+enum CompositeConceptTypeWidgetTypeSorting {
+  order
+  name
+  id
+}
+
+input CompositeConceptTypeWidgetTypeUpdateInput {
+  id: ID!
+  name: String!
+  tableType: WidgetTypeTableType!
+  columns: [CompositeConceptTypeWidgetTypeColumnInput!]!
+}
+
+input CompositeConceptTypeWidgetTypeUpdateOrderInput {
+  compositeConceptTypeId: ID!
+
+  """widget ids in the new order"""
+  ids: [ID!]!
+}
+
+type CompositeConceptWidgetRowPagination {
+  widgetType: CompositeConceptTypeWidgetType!
+  total: Int!
+  rows: [[[ConceptViewValue!]!]!]!
+}
+
+input CompositePropertyTypeFilterSettings {
+  name: String
+  conceptTypeId: ID
+  linkTypeId: ID
+}
+
+enum CompositePropertyTypeSorting {
+  registrationDate
+  name
+  id
+}
+
+type CompositePropertyValueTemplate implements RecordInterface {
+  id: ID!
+  name: String!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  creator: User!
+  lastUpdater: User
+  componentValueTypes: [CompositePropertyValueType!]!
+}
+
+input CompositePropertyValueTemplateCreateInput {
+  id: ID
+  name: String!
+  componentValueTypes: [NamedValueType!]!
+}
+
+input CompositePropertyValueTemplateFilterSettings {
+  name: String
+  creator: [ID!]
+  lastUpdater: [ID!]
+  registrationDate: TimestampInterval
+  updateDate: TimestampInterval
+}
+
+type CompositePropertyValueTemplatePagination {
+  listCompositePropertyValueTemplate: [CompositePropertyValueTemplate!]!
+  total: Int!
+}
+
+enum CompositePropertyValueTemplateSorting {
+  registrationDate
+  name
+  id
+}
+
+type CompositePropertyValueType {
+  id: ID!
+  name: String!
+  valueType: ConceptPropertyValueType!
+  isRequired: Boolean!
+  view: ComponentView!
+}
+
+type CompositeValue {
+  listValue: [NamedValue!]!
+}
+
+type Concept implements RecordInterface {
+  id: ID!
+  isActual: Boolean!
+  name: String!
+  notes: String
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  markers: [String!]!
+  startDate: DateTimeValue
+  endDate: DateTimeValue
+  conceptType: ConceptType!
+  paginationConceptProperty(offset: Int = 0, limit: Int = 20, filterSettings: ConceptPropertyFilterSettings!): ConceptPropertyPagination!
+  paginationConceptLink(offset: Int = 0, limit: Int = 20, filterSettings: ConceptLinkFilterSettings!): ConceptLinkPagination!
+  paginationConceptFact(offset: Int = 0, limit: Int = 20, filterSettings: DocumentLinkFilterSetting!): ConceptFactPagination!
+  paginationConceptPropertyDocuments(offset: Int = 0, limit: Int = 20, filterSettings: ConceptPropertyFilterSettings!): DocumentPagination!
+  paginationConceptLinkDocuments(offset: Int = 0, limit: Int = 20, filterSettings: ConceptLinkFilterSettings!): DocumentPagination!
+  listConceptFact: [ConceptFact!]!
+  image: Image
+  metric: ConceptStatistics!
+  listAlias: [ConceptProperty!]!
+  paginationAlias(limit: Int = 20, offset: Int = 0): ConceptPropertyPagination!
+  paginationMergedConcept(limit: Int = 20, offset: Int = 0): MergedConceptPagination!
+  listHeaderConceptProperty: [ConceptProperty!]!
+  paginationRedmineIssues(limit: Int = 20, offset: Int = 0, sortDirection: SortDirection = ascending): RedmineIssuePagination!
+  paginationIssue(offset: Int = 0, limit: Int = 20, filterSettings: IssueFilterSettings!, sortDirection: SortDirection!, sorting: IssueSorting!): IssuePagination!
+  accessLevel: AccessLevel!
+  listSubscription: ConceptSubscriptions!
+  paginationResearchMap(offset: Int = 0, limit: Int = 20, filterSettings: ResearchMapFilterSettings!, sortDirection: SortDirection!, sorting: ResearchMapSorting!): ResearchMapPagination!
+  creator: User!
+  lastUpdater: User
+}
+
+input Concept2IssueInput {
+  idIssue: ID!
+  conceptIds: [ID!]!
+  comment: String
+}
+
+input ConceptAddImplicitLinkInput {
+  firstNodeId: ID!
+  secondNodeId: ID!
+}
+
+input ConceptAddInputInput {
+  conceptId: ID!
+  xCoordinate: Float = 0
+  yCoordinate: Float = 0
+  groupId: ID
+}
+
+input ConceptCandidateAddInputInput {
+  """add concept candidates from document"""
+  documentId: ID!
+  groupId: ID
+}
+
+type ConceptCandidateFact implements FactInterface {
+  id: ID!
+  name: String!
+  mention: [TextBounding!]!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  conceptType: ConceptType!
+  listConcept: [Concept!]!
+  document: Document!
+}
+
+type ConceptCandidateFactMention {
+  concept: ConceptCandidateFact!
+  mention: Mention!
+}
+
+input ConceptExtraSettings {
+  searchOnMap: Boolean!
+  selectedContent: ResearchMapContentSelectInput
+}
+
+type ConceptFact implements FactInterface & RecordInterface {
+  id: ID!
+  mention: [TextBounding!]!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  accessLevel: AccessLevel!
+  concept: Concept!
+  document: Document!
+  creator: User!
+  lastUpdater: User
+}
+
+type ConceptFactLink {
+  conceptId: ID!
+  conceptFactId: ID!
+  status: FactStatus
+  isImplicit: Boolean!
+  concept: Concept!
+  conceptFact: ConceptCandidateFact!
+}
+
+type ConceptFactPagination {
+  total: Long!
+  listConceptFact: [ConceptFact!]!
+}
+
+input ConceptFilterSettings {
+  propertyFilterSettings: [PropertyFilterSettings!]
+  linkFilterSettings: [LinkFilterSettings!]
+  conceptTypeIds: [ID!]
+  conceptVariant: [ConceptVariant!]
+  name: String
+  exactName: String
+  substring: String
+  accessLevelId: ID
+  creator: [ID!]
+  lastUpdater: [ID!]
+
+  """Creation date [start; end]"""
+  creationDate: TimestampInterval
+
+  """Latest update date [start; end]"""
+  updateDate: TimestampInterval
+  markers: [String!]
+  hasLinkedIssues: Boolean
+}
+
+type ConceptImplicitLink {
+  conceptFromId: ID!
+  conceptToId: ID!
+  conceptFrom: Concept!
+  conceptTo: Concept!
+  conceptLinkType: ConceptLinkType!
+}
+
+union ConceptLikeFact = ConceptCandidateFact | ConceptFact
+
+type ConceptLink implements RecordInterface {
+  id: ID!
+  conceptFromId: ID!
+  conceptToId: ID!
+  notes: String
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  startDate: DateTimeValue
+  endDate: DateTimeValue
+  conceptFrom: Concept!
+  conceptTo: Concept!
+  conceptLinkType: ConceptLinkType!
+  paginationConceptLinkProperty(offset: Int = 0, limit: Int = 20, filterSettings: ConceptPropertyFilterSettings!): ConceptPropertyPagination!
+  paginationConceptLinkPropertyDocuments(offset: Int = 0, limit: Int = 20, filterSettings: ConceptPropertyFilterSettings!): DocumentPagination!
+  paginationDocument(offset: Int = 0, limit: Int = 20): DocumentPagination!
+  listConceptLinkFact: [ConceptLinkFact!]!
+  accessLevel: AccessLevel!
+  creator: User!
+  lastUpdater: User
+}
+
+type ConceptLinkCandidateFact implements FactInterface {
+  id: ID!
+  mention: [TextBounding!]!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  conceptLinkType: ConceptLinkType!
+  factFrom: ConceptLikeFact
+  factTo: ConceptLikeFact
+  document: Document!
+}
+
+input ConceptLinkCreationMutationInput {
+  conceptFromId: ID!
+  conceptToId: ID!
+  linkTypeId: ID!
+  notes: String
+  factInfo: FactInput
+  startDate: DateTimeValueInput
+  endDate: DateTimeValueInput
+  accessLevelId: ID
+}
+
+enum ConceptLinkDirection {
+  to
+  from
+}
+
+type ConceptLinkFact implements FactInterface & RecordInterface {
+  id: ID!
+  mention: [TextBounding!]!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  accessLevel: AccessLevel!
+  conceptLink: ConceptLink!
+  document: Document!
+  creator: User!
+  lastUpdater: User
+}
+
+type ConceptLinkFactPagination {
+  total: Long!
+  listConceptLinkFact: [ConceptLinkFact!]!
+}
+
+input ConceptLinkFilterSettings {
+  isEvent: Boolean
+  conceptLinkType: [ID!]
+  documentId: ID
+
+  """Creation date [start; end]"""
+  creationDate: TimestampInterval
+
+  """Latest update date [start; end]"""
+  updateDate: TimestampInterval
+}
+
+type ConceptLinkPagination {
+  total: Long!
+  listConceptLink: [ConceptLink!]!
+}
+
+type ConceptLinkPropertyFact implements FactInterface & RecordInterface {
+  id: ID!
+  mention: [TextBounding!]!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  parentConceptLink: ConceptLink!
+  accessLevel: AccessLevel!
+  conceptLinkProperty: ConceptProperty!
+  document: Document!
+  creator: User!
+  lastUpdater: User
+}
+
+input ConceptLinkPropertyInput {
+  propertyTypeId: ID!
+  factInfo: FactInput
+  notes: String
+  valueInput: [ComponentValueInput!]!
+  computableValue: String
+  linkId: ID!
+  isMain: Boolean = false
+  startDate: DateTimeValueInput
+  endDate: DateTimeValueInput
+  accessLevelId: ID
+}
+
+input ConceptLinkPropertyTypeCreationInput {
+  linkTypeId: ID!
+  name: String!
+  valueTypeId: ID!
+  computableFormula: String
+  pretrainedRelExtModels: [RelExtModelInput!] = []
+  notifyOnUpdate: Boolean = false
+}
+
+input ConceptLinkPropertyTypeUpdateInput {
+  id: ID!
+  name: String!
+  valueTypeId: ID!
+  computableFormula: String
+  pretrainedRelExtModels: [RelExtModelInput!] = []
+  notifyOnUpdate: Boolean = false
+}
+
+type ConceptLinkType implements RecordInterface {
+  id: ID!
+  name: String!
+  isDirected: Boolean!
+  isHierarchical: Boolean!
+  conceptFromType: ConceptType!
+  conceptToType: ConceptType!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  pretrainedRelExtModels: [RelExtModel!]!
+  notifyOnUpdate: Boolean!
+  paginationConceptLinkPropertyType(limit: Int = 20, offset: Int = 0, filterSettings: ConceptPropertyTypeFilterSettings!, sortDirection: SortDirection!, sorting: ConceptTypeSorting!): ConceptPropertyTypePagination!
+  listConceptLinkPropertyType: [ConceptPropertyType!]!
+  metric: ConceptLinkTypeStatistics!
+  creator: User!
+  lastUpdater: User
+}
+
+input ConceptLinkTypeCreationInput {
+  name: String!
+  isDirected: Boolean = true
+  isHierarchical: Boolean = false
+  conceptFromTypeId: ID!
+  conceptToTypeId: ID!
+  pretrainedRelExtModels: [RelExtModelInput!] = []
+  notifyOnUpdate: Boolean = false
+}
+
+input ConceptLinkTypeFilterSettings {
+  name: String
+  conceptFromTypeId: ID
+  conceptToTypeId: ID
+  conceptTypeAndEventFilter: conceptTypeAndEventFilter
+  isDirected: Boolean
+  isHierarchical: Boolean
+  creator: [ID!]
+  lastUpdater: [ID!]
+  registrationDate: TimestampInterval
+  updateDate: TimestampInterval
+  hasRelExtModels: Boolean
+}
+
+type ConceptLinkTypePagination {
+  listConceptLinkType: [ConceptLinkType!]!
+  total: Int!
+}
+
+type ConceptLinkTypePath {
+  linkType: ConceptLinkType!
+  fixed: ConceptLinkDirection
+}
+
+input ConceptLinkTypePathInput {
+  linkTypeId: ID!
+  fixed: ConceptLinkDirection
+}
+
+enum ConceptLinkTypeSorting {
+  conceptType
+  name
+  id
+}
+
+type ConceptLinkTypeStatistics {
+  countPropertyType: Int!
+}
+
+input ConceptLinkTypeUpdateInput {
+  id: ID!
+  name: String!
+  conceptFromTypeId: ID!
+  conceptToTypeId: ID!
+  pretrainedRelExtModels: [RelExtModelInput!] = []
+  isDirected: Boolean!
+  isHierarchical: Boolean!
+  notifyOnUpdate: Boolean = false
+}
+
+input ConceptLinkUpdateMutationInput {
+  id: ID!
+  notes: String
+  startDate: DateTimeValueInput
+  endDate: DateTimeValueInput
+  accessLevelId: ID
+}
+
+type ConceptMention {
+  concept: Concept!
+  mention: Mention!
+}
+
+input ConceptMergeInput {
+  """id of concept we want to merge into"""
+  mainConceptId: ID!
+
+  """id of concept we want to merge"""
+  mergedConceptId: ID!
+}
+
+input ConceptMutationInput {
+  name: String!
+  conceptTypeId: ID!
+  notes: String
+  factInfo: FactInput
+  markers: [String!] = []
+  accessLevelId: ID
+  startDate: DateTimeValueInput
+  endDate: DateTimeValueInput
+}
+
+type ConceptPagination {
+  total: Long!
+  showTotal: Long!
+  listConcept: [Concept!]!
+}
+
+type ConceptProperty implements RecordInterface {
+  id: ID!
+  isMain: Boolean!
+  propertyType: ConceptPropertyType!
+  notes: String
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  startDate: DateTimeValue
+  endDate: DateTimeValue
+  paginationDocument(offset: Int = 0, limit: Int = 20): DocumentPagination!
+  accessLevel: AccessLevel!
+  value: AnyValue!
+  listConceptPropertyFact: [ConceptPropertyLikeFact!]!
+  creator: User!
+  lastUpdater: User
+}
+
+type ConceptPropertyCandidateFact implements FactInterface {
+  id: ID!
+  mention: [TextBounding!]!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  conceptPropertyType: ConceptPropertyType!
+  factTo: ConceptPropertyValueCandidateFact!
+  factFrom: ConceptLikeFact
+  document: Document!
+}
+
+input ConceptPropertyCreateInput {
+  propertyTypeId: ID!
+  conceptId: ID!
+  valueInput: [ComponentValueInput!]!
+  computableValue: String
+  factInfo: FactInput
+  notes: String
+  isMain: Boolean = false
+  startDate: DateTimeValueInput
+  endDate: DateTimeValueInput
+  accessLevelId: ID
+}
+
+type ConceptPropertyFact implements FactInterface & RecordInterface {
+  id: ID!
+  mention: [TextBounding!]!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  parentConcept: Concept!
+  accessLevel: AccessLevel!
+  conceptProperty: ConceptProperty!
+  document: Document!
+  creator: User!
+  lastUpdater: User
+}
+
+input ConceptPropertyFilterSettings {
+  onlyMain: Boolean = false
+  documentId: ID
+}
+
+union ConceptPropertyLikeFact = ConceptPropertyFact | ConceptLinkPropertyFact
+
+type ConceptPropertyPagination {
+  total: Long!
+  listConceptProperty: [ConceptProperty!]!
+}
+
+type ConceptPropertyType implements RecordInterface {
+  id: ID!
+  name: String!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  pretrainedRelExtModels: [RelExtModel!]!
+  notifyOnUpdate: Boolean!
+  computableFormula: String
+  parentConceptType: ConceptType
+  parentConceptLinkType: ConceptLinkType
+  valueType: AnyValueType!
+  creator: User!
+  lastUpdater: User
+}
+
+input ConceptPropertyTypeCreationInput {
+  conceptTypeId: ID!
+  name: String!
+  valueTypeId: ID!
+  computableFormula: String
+  pretrainedRelExtModels: [RelExtModelInput!] = []
+  notifyOnUpdate: Boolean = false
+}
+
+input ConceptPropertyTypeFilterSettings {
+  name: String
+  conceptTypeId: ID
+  conceptLinkTypeId: ID
+  conceptValueTypeId: ID
+  valueType: ValueType
+  conceptTypeFromLinkTypeId: ID
+}
+
+type ConceptPropertyTypePagination {
+  listConceptPropertyType: [ConceptPropertyType!]!
+  total: Int!
+}
+
+enum ConceptPropertyTypeSorting {
+  registrationDate
+  name
+}
+
+input ConceptPropertyTypeUpdateInput {
+  id: ID!
+  name: String!
+  valueTypeId: ID!
+  computableFormula: String
+  pretrainedRelExtModels: [RelExtModelInput!] = []
+  notifyOnUpdate: Boolean = false
+}
+
+input ConceptPropertyUpdateInput {
+  propertyId: ID!
+  isMain: Boolean!
+  notes: String
+  computableValue: String
+  startDate: DateTimeValueInput
+  endDate: DateTimeValueInput
+  valueInput: [ComponentValueInput!]!
+  accessLevelId: ID
+}
+
+type ConceptPropertyValueCandidateFact implements FactInterface {
+  id: ID!
+  mention: [TextBounding!]!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  conceptPropertyValueType: ConceptPropertyValueType!
+  document: Document!
+}
+
+type ConceptPropertyValueStatistics {
+  countConceptType: Int!
+  countLinkType: Int!
+  countDictionary: Int!
+  countRegexp: Int!
+}
+
+type ConceptPropertyValueType implements RecordInterface {
+  id: ID!
+  name: String!
+  valueType: ValueType!
+  listWhiteDictionary: [String!]!
+  pretrainedNERCModels: [String!]!
+  listWhiteRegexp: [NERCRegexp!]!
+  valueRestriction: [String!]!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  listBlackDictionary: [String!]!
+  metric: ConceptPropertyValueStatistics!
+  listConceptType: [ConceptType!]!
+  paginationConceptType(limit: Int = 20, offset: Int = 0): ConceptTypePagination!
+  listConceptLinkType: [ConceptLinkType!]!
+  paginationConceptLinkType(limit: Int = 20, offset: Int = 0): ConceptLinkTypePagination!
+  listBlackRegexp: [NERCRegexp!]!
+  listTypeSearchElement: [TypeSearchElement!]!
+  listTypeBlackSearchElement: [TypeSearchElement!]!
+  creator: User!
+  lastUpdater: User
+}
+
+input ConceptPropertyValueTypeCreationInput {
+  name: String!
+  valueType: ValueType!
+  pretrainedNERCModels: [String!] = []
+  valueRestriction: [String!] = []
+}
+
+input ConceptPropertyValueTypeFilterSettings {
+  name: String
+  valueType: ValueType
+  creator: [ID!]
+  lastUpdater: [ID!]
+  registrationDate: TimestampInterval
+  updateDate: TimestampInterval
+  regexpExists: Boolean
+  dictionaryExists: Boolean
+  pretrainedNERCModels: [String!]
+}
+
+type ConceptPropertyValueTypePagination {
+  listConceptPropertyValueType: [ConceptPropertyValueType!]!
+  total: Int!
+}
+
+enum ConceptPropertyValueTypeSorting {
+  regexp
+  dictionary
+  valueType
+  name
+  id
+}
+
+input ConceptPropertyValueTypeUpdateInput {
+  id: ID!
+  name: String!
+  valueType: ValueType!
+  pretrainedNERCModels: [String!]!
+  valueRestriction: [String!]!
+}
+
+type ConceptRegistryView {
+  columns: [ConceptRegistryViewColumn!]!
+  metrics: [ConceptRegistryViewMetric!]!
+  sorting: ConceptRegistryViewSorting
+}
+
+type ConceptRegistryViewColumn {
+  columnType: ConceptViewColumnType!
+}
+
+input ConceptRegistryViewInput {
+  columns: [ConceptViewColumnType!] = []
+  metrics: [ConceptViewMetricType!] = []
+  sorting: ConceptRegistryViewSortingInput
+}
+
+type ConceptRegistryViewMetric {
+  metricType: ConceptViewMetricType!
+}
+
+type ConceptRegistryViewSorting {
+  sortingType: ConceptSorting!
+  sortDirection: SortDirection!
+}
+
+input ConceptRegistryViewSortingInput {
+  sortingType: ConceptSorting!
+  sortDirection: SortDirection!
+}
+
+enum ConceptSorting {
+  countTasks
+  countResearchMaps
+  countConceptsAndDocuments
+  countPotentialDocuments
+  countDocumentFacts
+  countDocumentMentions
+  countConcepts
+  countEvents
+  countObjects
+  countProperties
+  score
+  lastUpdater
+  creator
+  systemUpdateDate
+  systemRegistrationDate
+  accessLevel
+  name
+  id
+}
+
+type ConceptStatistics {
+  countProperties: Int!
+  countObjects: Int!
+  countEvents: Int!
+  countDocumentMentions: Int!
+  countDocumentFacts: Int!
+  countPotentialDocuments: Int!
+  countResearchMaps: Int!
+  countTasks: Int!
+  countConcepts: Int!
+  countConceptsAndDocuments: Int!
+}
+
+type ConceptSubscriptions {
+  subscriptions: [ConceptUpdate!]!
+  listUser: [User!]!
+  countUsers: Int!
+}
+
+type ConceptType implements RecordInterface {
+  id: ID!
+  name: String!
+  xCoordinate: Float!
+  yCoordinate: Float!
+  listWhiteDictionary: [String!]!
+  pretrainedNERCModels: [String!]!
+  listWhiteRegexp: [NERCRegexp!]!
+  isEvent: Boolean!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  listBlackDictionary: [String!]!
+  paginationConceptPropertyType(limit: Int = 20, offset: Int = 0, filterSettings: ConceptPropertyTypeFilterSettings!, sortDirection: SortDirection = descending, sorting: ConceptPropertyTypeSorting = name): ConceptPropertyTypePagination!
+  metric: ConceptTypeStatistics!
+  paginationConceptLinkType(limit: Int = 20, offset: Int = 0, filterSettings: ConceptLinkTypeFilterSettings!, sortDirection: SortDirection = descending, sorting: ConceptLinkTypeSorting = id): ConceptLinkTypePagination!
+  paginationConceptTypeView(limit: Int = 20, offset: Int = 0): ConceptTypeViewPagination!
+  listCompositeConceptType: [CompositeConceptType!]!
+  listConceptPropertyType: [ConceptPropertyType!]!
+  listConceptLinkType: [ConceptLinkType!]!
+  listConceptHeaderPropertyType: [ConceptPropertyType!]!
+  image: Image
+  fullDictionary: [String!]! @deprecated(reason: "do not show to user, union of DB dictionary and alias dictionary")
+  nonConfigurableDictionary: [String!]!
+  showInMenu: Boolean!
+  listBlackRegexp: [NERCRegexp!]!
+  listNamesDictionary: [String!]!
+  listTypeSearchElement: [TypeSearchElement!]!
+  listTypeBlackSearchElement: [TypeSearchElement!]!
+  creator: User!
+  lastUpdater: User
+}
+
+input conceptTypeAndEventFilter {
+  fullType: ID!
+  isEvent: Boolean!
+}
+
+input ConceptTypeCreationInput {
+  name: String!
+  xCoordinate: Float!
+  yCoordinate: Float!
+  pretrainedNERCModels: [String!] = []
+  isEvent: Boolean = false
+  showInMenu: Boolean = false
+}
+
+input ConceptTypeFilterSettings {
+  name: String
+  isEvent: Boolean
+  creator: [ID!]
+  lastUpdater: [ID!]
+  registrationDate: TimestampInterval
+  updateDate: TimestampInterval
+  regexpExists: Boolean
+  dictionaryExists: Boolean
+  pretrainedNERCModels: [String!]
+}
+
+enum ConceptTypeLinkMetadata {
+  endDate
+  startDate
+  updateDate
+  registrationDate
+  lastUpdater
+  creator
+  linkType
+}
+
+enum ConceptTypeMetadata {
+  markers
+  endDate
+  startDate
+  lastUpdater
+  creator
+  systemUpdateDate
+  systemRegistrationDate
+  conceptType
+  notes
+  name
+  concept
+}
+
+type ConceptTypePagination {
+  listConceptType: [ConceptType!]!
+  total: Int!
+}
+
+enum ConceptTypeSorting {
+  dictionary
+  regexp
+  name
+  id
+}
+
+type ConceptTypeStatistics {
+  countPropertyType: Int!
+  countLinkType: Int!
+  countDictionary: Int!
+  countRegexp: Int!
+}
+
+input ConceptTypeUpdateInput {
+  id: ID!
+  xCoordinate: Float!
+  yCoordinate: Float!
+  name: String!
+  pretrainedNERCModels: [String!] = []
+  isEvent: Boolean!
+  showInMenu: Boolean = false
+}
+
+type ConceptTypeView implements RecordInterface {
+  id: ID!
+  name: String!
+  showInMenu: Boolean!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  conceptType: ConceptType!
+  columns: [CompositeConceptTypeWidgetTypeColumn!]!
+  paginationConcept(limit: Int = 20, offset: Int = 0, sortColumn: ID, sortDirection: SortDirection = descending, query: String, filterSettings: ConceptFilterSettings): ConceptViewPagination!
+  creator: User!
+  lastUpdater: User
+}
+
+input ConceptTypeViewCreationInput {
+  conceptTypeId: ID!
+  name: String!
+  showInMenu: Boolean!
+  columns: [CompositeConceptTypeWidgetTypeColumnInput!]!
+}
+
+type ConceptTypeViewPagination {
+  listConceptTypeView: [ConceptTypeView!]!
+  total: Int!
+}
+
+input ConceptTypeViewUpdateInput {
+  id: ID!
+  name: String!
+  showInMenu: Boolean!
+  columns: [CompositeConceptTypeWidgetTypeColumnInput!]!
+}
+
+input ConceptUnmergeInput {
+  mainConceptId: ID!
+  mergedConceptId: [ID!]!
+}
+
+enum ConceptUpdate {
+  linkProperty
+  link
+  property
+  metadata
+}
+
+input ConceptUpdateInput {
+  conceptId: ID!
+  name: String!
+  conceptTypeId: ID!
+  notes: String
+  documentInput: FactInput
+  markers: [String!] = []
+  accessLevelId: ID
+  startDate: DateTimeValueInput
+  endDate: DateTimeValueInput
+}
+
+enum ConceptVariant {
+  obj
+  event
+}
+
+type ConceptView {
+  concept: Concept!
+  rows: [[ConceptViewValue!]!]!
+}
+
+enum ConceptViewColumnType {
+  metrics
+  lastUpdater
+  creator
+  systemUpdateDate
+  systemRegistrationDate
+  accessLevel
+  conceptType
+  name
+  image
+  id
+}
+
+enum ConceptViewMetricType {
+  countTasks
+  countResearchMaps
+  countConceptsAndDocuments
+  countPotentialDocuments
+  countDocumentFacts
+  countDocumentMentions
+  countConcepts
+  countEvents
+  countObjects
+  countProperties
+}
+
+type ConceptViewPagination {
+  total: Long!
+  listConceptView: [ConceptView!]!
+}
+
+union ConceptViewValue = DateTimeValue | GeoPointValue | IntValue | DoubleValue | StringLocaleValue | StringValue | LinkValue | CompositeValue | Concept | ConceptType | ConceptLinkType | User
+
+type ConceptWithNeighbors {
+  concept: Concept!
+  numOfNeighbors: Int!
+}
+
+input Coordinate {
+  x: Float!
+  y: Float!
+}
+
+type Coordinates {
+  latitude: Float!
+  longitude: Float!
+}
+
+input CoordinatesInput {
+  latitude: Float!
+  longitude: Float!
+}
+
+input CountryFilterSettings {
+  searchString: String
+  target: CountryTarget
+}
+
+type CountryPagination {
+  listCountry: [String!]!
+  total: Int!
+}
+
+enum CountryTarget {
+  account
+  platform
+}
+
+type Date {
+  year: Int
+  month: Int
+  day: Int
+}
+
+input DateInput {
+  year: Int
+  month: Int
+  day: Int
+}
+
+type DateTimeInterval {
+  start: DateTimeValue
+  end: DateTimeValue
+}
+
+input DateTimeIntervalInput {
+  start: DateTimeValueInput
+  end: DateTimeValueInput
+}
+
+input DateTimeIntervalPairInput {
+  start: DateTimeIntervalInput!
+  end: DateTimeIntervalInput!
+}
+
+type DateTimeValue {
+  date: Date!
+  time: Time
+}
+
+input DateTimeValueInput {
+  date: DateInput!
+  time: TimeInput
+}
+
+type DictValue {
+  value: String!
+}
+
+type DocSpecificMetadata {
+  """Категории"""
+  category: String
+
+  """Дата последней печати"""
+  lastPrintedDate: UnixTime
+
+  """Кем сохранен"""
+  lastModifiedBy: String
+
+  """Дата создания содержимого"""
+  createdDate: UnixTime
+
+  """Комментарии"""
+  comments: String
+
+  """Авторы"""
+  author: String
+
+  """Тема"""
+  documentSubject: String
+
+  """Ключевые слова"""
+  keywords: String
+
+  """Дата последнего сохранения"""
+  modifiedData: UnixTime
+
+  """Название документа"""
+  docName: String
+}
+
+type Document implements RecordInterface {
+  id: ID!
+  title: String
+  externalUrl: String
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  publicationDate: UnixTime
+  publicationAuthor: String
+  notes: String
+  documentType: DocumentType!
+
+  """list of annotated highlightings"""
+  highlightings: [Highlighting!]!
+  markers: [String!]!
+  tables: [Table!]!
+  metadata: DocumentMetadata
+  uuid: ID!
+  trustLevel: TrustLevel
+  score: Float
+  hasText: Boolean!
+  parent: Document
+  listChild: [Document!]!
+  paginationChild(offset: Int = 0, limit: Int = 20, filterSettings: DocumentLinkFilterSetting!): DocumentPagination!
+  internalUrl: String
+  avatar: Image
+  metric: Metrics!
+  paginationConceptFact(offset: Int = 0, limit: Int = 20): ConceptFactPagination!
+  listConceptFact: [ConceptFact!]!
+  paginationConceptLinkFact(offset: Int = 0, limit: Int = 20): ConceptLinkFactPagination!
+  listConceptLinkDocumentFact: [ConceptLinkFact!]!
+  preview: String!
+  paginationRedmineIssues(limit: Int = 20, offset: Int = 0, sortDirection: SortDirection = ascending): RedmineIssuePagination!
+  paginationIssue(offset: Int = 0, limit: Int = 20, filterSettings: IssueFilterSettings!, sortDirection: SortDirection!, sorting: IssueSorting!): IssuePagination!
+  accessLevel: AccessLevel!
+  text(showHidden: Boolean = false): [FlatDocumentStructure!]!
+  story: ID!
+  listSubscription: DocumentSubscriptions!
+  paginationSimilarDocuments(offset: Int = 0, limit: Int = 20): DocumentPagination!
+  isRead: Boolean!
+  listFact: [Fact!]!
+  creator: User!
+  lastUpdater: User
+}
+
+input Document2IssueInput {
+  idIssue: ID!
+  documentIds: [ID!]!
+  comment: String
+}
+
+input DocumentAddInputInput {
+  documentId: ID!
+  xCoordinate: Float = 0
+  yCoordinate: Float = 0
+  groupId: ID
+}
+
+input DocumentAllKBFactsRemoveInput {
+  documentId: ID!
+  kbEntityId: ID!
+}
+
+input DocumentAvatarUpdateInput {
+  id: ID!
+  childrenDocumentId: ID
+}
+
+type DocumentCardView {
+  columns: [DocumentCardViewColumn!]!
+  metrics: [DocumentViewMetric!]!
+}
+
+type DocumentCardViewColumn {
+  columnType: DocumentViewColumnType!
+}
+
+input DocumentCardViewInput {
+  columns: [DocumentViewColumnType!] = []
+  metrics: [DocumentViewMetricType!] = []
+}
+
+input DocumentDeleteCandidateFactInput {
+  documentId: ID!
+  factId: ID!
+}
+
+input DocumentDoubleCreationInput {
+  uuid: ID!
+  doubleUuid: ID!
+  parentUuid: ID
+  conceptId: ID
+}
+
+type DocumentFeed implements RecordInterface {
+  id: ID!
+  name: String!
+  searchString: String!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  paginationDocument(mode: DocumentFeedMode = all, limit: Int = 20, offset: Int = 0, query: String, filterSettings: DocumentFilterSettings, direction: SortDirection = descending, sortField: DocumentSorting, extraSettings: ExtraSettings!): DocumentFromDocumentFeedPagination!
+  creator: User!
+  lastUpdater: User
+}
+
+input DocumentFeedCreationInput {
+  name: String!
+  query: String
+  filterSettings: DocumentFilterSettings
+}
+
+input DocumentFeedFilterSettings {
+  id: ID
+  searchString: String
+  creator: [ID!]
+  lastUpdater: [ID!]
+  registrationDate: TimestampInterval
+  updateDate: TimestampInterval
+}
+
+enum DocumentFeedMode {
+  deleted
+  favorites
+  all
+}
+
+type DocumentFeedPagination {
+  listDocumentFeed: [DocumentFeed!]!
+  total: Int!
+}
+
+enum DocumentFeedSorting {
+  lastUpdater
+  creator
+  systemUpdateDate
+  systemRegistrationDate
+  name
+  id
+}
+
+input DocumentFeedUpdateDocumentsInput {
+  documentIds: [ID!]!
+}
+
+input DocumentFeedUpdateInput {
+  name: String!
+  query: String
+  filterSettings: DocumentFilterSettings
+}
+
+input DocumentFilterSettings {
+  searchString: String
+  substring: String
+  namedEntities: [String!]
+  concepts: [ID!]
+  platforms: [ID!]
+  accounts: [ID!]
+
+  """Number of named entities [lowerBound; upperBound]"""
+  nercNum: IntervalInt
+
+  """Number of related concepts [lowerBound; upperBound]"""
+  conceptsNum: IntervalInt
+
+  """Number of child documents [lowerBound; upperBound]"""
+  childDocsNum: IntervalInt
+
+  """Publication date [start; end]"""
+  publicationDate: TimestampInterval
+
+  """System registration date [start; end]"""
+  registrationDate: TimestampInterval
+
+  """Latest update date [start; end]"""
+  lastUpdate: TimestampInterval
+  creator: [ID!]
+  publicationAuthor: [String!]
+  lastUpdater: [ID!]
+  accessLevelId: ID
+  links: [String!]
+  markers: [String!]
+  documentType: [DocumentType!]
+  sourceType: [DocumentSourceType!]
+  trustLevel: [TrustLevel!]
+  hasLinkedIssues: Boolean
+  nestedIds: [ID!]
+  factTypes: [ID!]
+  story: String
+  showRead: Boolean
+  jobIds: [ID!]
+  periodicJobIds: [ID!]
+  taskIds: [ID!]
+  periodicTaskIds: [ID!]
+}
+
+type DocumentFromDocumentFeed {
+  document: Document!
+  isFromFavorites: Boolean!
+  isFromDeleted: Boolean!
+}
+
+type DocumentFromDocumentFeedPagination {
+  listDocument: [DocumentFromDocumentFeed!]!
+  total: Int!
+  showTotal: Int!
+}
+
+enum DocumentGrouping {
+  story
+  none
+}
+
+type DocumentLink {
+  parentId: ID!
+  childId: ID!
+}
+
+input DocumentLinkFilterSetting {
+  documentType: DocumentType
+}
+
+type DocumentMetadata {
+  """Название файла"""
+  fileName: String!
+
+  """Размер файла"""
+  size: Long!
+
+  """Формат файла"""
+  fileType: String
+
+  """Дата изменения"""
+  modifiedTime: UnixTime!
+
+  """Дата создания"""
+  createdTime: UnixTime!
+
+  """Дата последнего просмотра"""
+  accessTime: UnixTime!
+
+  """Подробные свойства файла (для doc, docx)"""
+  docSpecificMetadata: DocSpecificMetadata
+
+  """Подробные свойства файла (для pdf)"""
+  pdfSpecificMetadata: PdfSpecificMetadataGQL
+
+  """Подробные свойства файла (для картинок)"""
+  imageSpecificMetadata: ImageSpecificMetadataGQL
+
+  """Источник документа"""
+  source: String
+
+  """Язык документа"""
+  language: Language
+
+  """Идентификатор запуска сбора"""
+  jobId: String
+
+  """Идентификатор периодического запуска сбора"""
+  periodicJobId: String
+
+  """Идентификатор задачи импорта"""
+  taskId: String
+
+  """Идентификатор периодической задачи импорта"""
+  periodicTaskId: String
+  platform: Platform
+  account: [Account!]!
+}
+
+input DocumentNodeUpdateInput {
+  id: ID!
+  nodeId: ID!
+
+  """Node's language; it is removed if id is null"""
+  language: LanguageUpdateInput
+
+  """Add a new translation for this node"""
+  translation: TranslationInput
+}
+
+type DocumentPagination {
+  listDocument: [Document!]!
+  total: Int!
+}
+
+enum DocumentRecall {
+  none
+  high
+  medium
+  low
+}
+
+type DocumentRegistryView {
+  columns: [DocumentRegistryViewColumn!]!
+  metrics: [DocumentViewMetric!]!
+  sorting: DocumentRegistryViewSorting
+}
+
+type DocumentRegistryViewColumn {
+  columnType: DocumentViewColumnType!
+}
+
+input DocumentRegistryViewInput {
+  columns: [DocumentViewColumnType!] = []
+  metrics: [DocumentViewMetricType!] = []
+  sorting: DocumentRegistryViewSortingInput
+}
+
+type DocumentRegistryViewSorting {
+  sortingType: DocumentSorting!
+  sortDirection: SortDirection!
+}
+
+input DocumentRegistryViewSortingInput {
+  sortingType: DocumentSorting!
+  sortDirection: SortDirection!
+}
+
+enum DocumentSorting {
+  countResearchMaps
+  countTasks
+  countChildDocs
+  countLinks
+  countDisambiguatedEntities
+  countEntities
+  countNamedEntities
+  countConcepts
+  countEvents
+  countObjects
+  score
+  trustLevel
+  secretLevel
+  updateDate
+  registrationDate
+  publicationDate
+  text
+  title
+  id
+}
+
+enum DocumentSourceType {
+  external
+  internal
+}
+
+type DocumentSubscriptions {
+  subscriptions: [DocumentUpdate!]!
+  listUser: [User!]!
+  countUsers: Int!
+}
+
+enum DocumentType {
+  image
+  text
+}
+
+enum DocumentUpdate {
+  markup
+  content
+  metadata
+}
+
+input DocumentUpdateInput {
+  id: ID!
+  notes: String
+  title: String
+  previewText: String
+  publicationDate: Long
+  publicationAuthor: String
+  markers: [String!] = []
+  trustLevel: TrustLevel
+  platform: ID
+  account: [ID!]
+  language: String
+}
+
+enum DocumentViewColumnType {
+  metrics
+  markers
+  notes
+  trustLevel
+  secretLevel
+  lastUpdater
+  creator
+  updateDate
+  registrationDate
+  publicationAuthor
+  publicationDate
+  image
+}
+
+type DocumentViewMetric {
+  metricType: DocumentViewMetricType!
+}
+
+enum DocumentViewMetricType {
+  countResearchMaps
+  countTasks
+  countLinks
+  countChildDocs
+  countDisambiguatedEntities
+  countNamedEntities
+  countEntities
+  countConcepts
+  countEvents
+  countObjects
+}
+
+type DomainMap {
+  listNode: [MapNode!]!
+  listEdge: [MapEdge!]!
+}
+
+type DoubleValue {
+  value: Float!
+}
+
+input DoubleValueInput {
+  value: Float!
+}
+
+enum ElementType {
+  blackList
+  whiteList
+}
+
+union Entity = Concept | Document | ConceptCandidateFact | ConceptType
+
+union EntityLink = ConceptLink | ConceptFactLink | ConceptImplicitLink | ConceptCandidateFactMention | ConceptMention | DocumentLink | ConceptLinkCandidateFact | ConceptLinkType
+
+input ExtraSettings {
+  hideChild: Boolean = true
+  searchOnMap: Boolean = false
+  rankingScript: String
+  selectedContent: ResearchMapContentSelectInput
+}
+
+type Facet {
+  value: String!
+  count: Long!
+}
+
+union Fact = ConceptCandidateFact | ConceptFact | ConceptLinkCandidateFact | ConceptLinkFact | ConceptPropertyCandidateFact | ConceptPropertyFact | ConceptPropertyValueCandidateFact | ConceptLinkPropertyFact
+
+input FactInput {
+  documentId: ID!
+  annotations: [TextBoundingInput!] = []
+  factId: ID
+}
+
+"""common part of fact"""
+interface FactInterface {
+  id: ID!
+  mention: [TextBounding!]!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  document: Document!
+}
+
+enum FactStatus {
+  new
+  autoApproved
+  hidden
+  declined
+  approved
+}
+
+type FlatDocumentStructure {
+  text: String!
+  annotations: [Annotation!]!
+  metadata: ParagraphMetadata!
+  documentId: ID
+  nodeId: ID!
+  hierarchyLevel: Int!
+  translatedText: String!
+  id: ID!
+  language: Language
+}
+
+input GeoPointFormInput {
+  latitude: Float!
+  longitude: Float!
+}
+
+input GeoPointInput {
+  point: CoordinatesInput
+  name: String
+}
+
+type GeoPointValue {
+  point: Coordinates
+  name: String
+}
+
+input GeoPointWithNameFormInput {
+  point: GeoPointFormInput
+  name: String
+
+  """in meters"""
+  radius: Float!
+}
+
+type Group {
+  id: ID!
+  name: String!
+  xCoordinate: Float!
+  yCoordinate: Float!
+  collapsed: Boolean!
+  layout: String
+}
+
+input GroupCreationInput {
+  researchMapId: ID!
+  name: String!
+  xCoordinate: Float = 0
+  yCoordinate: Float = 0
+  collapsed: Boolean!
+  layout: String
+}
+
+input GroupUpdateInput {
+  name: String!
+  xCoordinate: Float = 0
+  yCoordinate: Float = 0
+  collapsed: Boolean!
+  layout: String
+}
+
+type Highlighting {
+  highlighting: String!
+  annotations: [HLAnnotation!]!
+}
+
+type HLAnnotation {
+  start: Int!
+  end: Int!
+}
+
+type Image {
+  url: String!
+}
+
+type ImageSpecificMetadataGQL {
+  """Высота"""
+  height: Long
+
+  """Ширина"""
+  width: Long
+
+  """Оринетация"""
+  orientation: Int
+}
+
+input InterestObjectMainPropertiesOrderUpdateInput {
+  conceptTypeId: ID!
+  orderedMainPropertyTypeIds: [ID!] = []
+}
+
+input IntervalDouble {
+  start: Float
+  end: Float
+}
+
+input IntervalInt {
+  start: Int
+  end: Int
+}
+
+type IntValue {
+  value: Int!
+}
+
+input IntValueInput {
+  value: Int!
+}
+
+type Issue implements RecordInterface {
+  id: ID!
+  topic: String!
+  description: String
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  status: IssueStatus!
+  priority: IssuePriority!
+  executionTimeLimit: UnixTime
+  markers: [String!]!
+  creator: User!
+  lastUpdater: User
+  executor: User!
+  paginationDocument(offset: Int = 0, limit: Int = 20): DocumentPagination!
+  paginationConcept(offset: Int = 0, limit: Int = 20): ConceptPagination!
+  paginationIssue(offset: Int = 0, limit: Int = 20, filterSettings: IssueFilterSettings!, sortDirection: SortDirection!, sorting: IssueSorting!): IssuePagination!
+  metric: IssueStatistics!
+  paginationIssueChange(offset: Int = 0, limit: Int = 20): IssueChangePagination!
+}
+
+input Issue2TaskInput {
+  idIssue: ID!
+  taskIds: [ID!]!
+  comment: String
+}
+
+type IssueChange implements RecordInterface {
+  id: ID!
+  from: IssueInfo!
+  to: IssueInfo!
+  comment: String
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  creator: User!
+  lastUpdater: User
+}
+
+type IssueChangePagination {
+  total: Long!
+  listIssueChange: [IssueChange!]!
+}
+
+input IssueCreationInput {
+  topic: String!
+  description: String
+  status: IssueStatus!
+  priority: IssuePriority!
+  executorId: ID!
+  executionTimeLimit: UnixTime
+  documents: [ID!]!
+  concepts: [ID!]!
+  issues: [ID!]!
+  markers: [String!]!
+}
+
+input IssueEditFieldsInput {
+  id: ID!
+  topic: String!
+  description: String
+  status: IssueStatus!
+  priority: IssuePriority!
+  executorId: ID!
+  executionTimeLimit: UnixTime
+  markers: [String!]!
+  comment: String
+}
+
+input IssueFilterSettings {
+  executor: [ID!]
+  creator: [ID!]
+  lastUpdater: [ID!]
+  status: [IssueStatus!]
+  priority: [IssuePriority!]
+  registrationDate: TimestampInterval
+  updateDate: TimestampInterval
+  issueForDocument: Boolean = false
+  issueForConcept: Boolean = false
+  onlyMy: Boolean = false
+  issue: ID
+  concept: ID
+  document: ID
+  name: String
+  description: String
+  executionTimeLimit: TimestampInterval
+  markers: [String!]
+}
+
+type IssueInfo {
+  topic: String
+  description: String
+  status: IssueStatus
+  priority: IssuePriority
+  executionTimeLimit: UnixTime
+  markers: [String!]
+  executor: User
+  listConcept: [Concept!]
+  listDocument: [Document!]
+  listIssue: [Issue!]
+}
+
+type IssuePagination {
+  listIssue: [Issue!]!
+  total: Int!
+}
+
+enum IssuePriority {
+  High
+  Medium
+  Low
+}
+
+enum IssueSorting {
+  executor
+  lastUpdater
+  creator
+  updateDate
+  registrationDate
+  priority
+  status
+  topic
+  id
+}
+
+type IssueStatistics {
+  countConcept: Int!
+  countDoc: Int!
+  countIssue: Int!
+}
+
+enum IssueStatus {
+  dataRequested
+  improvementRequested
+  reviewRequested
+  canceled
+  closed
+  development
+  open
+}
+
+type Language {
+  id: ID!
+}
+
+input LanguageFilterSettings {
+  searchString: String
+}
+
+input LanguageInput {
+  id: ID!
+}
+
+type LanguagePagination {
+  listLanguage: [String!]!
+  total: Int!
+}
+
+input LanguageUpdateInput {
+  id: ID
+}
+
+enum LinkDirection {
+  undirected
+  out
+  in
+}
+
+input LinkFilterSettings {
+  linkTypeId: ID
+
+  """in, out or undirected, any if not defined"""
+  linkDirection: LinkDirection
+  otherConceptId: [ID!]
+}
+
+type LinkValue {
+  link: String!
+}
+
+input LinkValueInput {
+  link: String!
+}
+
+enum Locale {
+  other
+  eng
+  ru
+}
+
+"""
+The `Long` scalar type represents non-fractional signed whole numeric values.
+Long can represent values between -(2^63) and 2^63 - 1.
+"""
+scalar Long
+
+type MapEdge {
+  fromID: ID!
+  toID: ID!
+  linkType: MapEdgeType!
+  id: ID!
+  link: EntityLink!
+}
+
+input MapEdgeFilterSettings {
+  edgeType: [MapEdgeType!]
+}
+
+enum MapEdgeType {
+  conceptTypeLink
+  documentLink
+  conceptMention
+  conceptCandidateFactMention
+  conceptLinkCandidateFact
+  conceptImplicitLink
+  conceptFactLink
+  conceptLink
+}
+
+type MapNode {
+  id: ID!
+  groupId: ID
+  xCoordinate: Float!
+  yCoordinate: Float!
+  nodeType: MapNodeType!
+  entity: Entity!
+}
+
+input MapNodeFilterSettings {
+  nodeType: [MapNodeType!]
+}
+
+enum MapNodeType {
+  conceptType
+  conceptCandidateFact
+  document
+  concept
+}
+
+type Markers {
+  markers: [String!]!
+}
+
+input MassUpdateIssueInput {
+  ids: [ID!]!
+  status: IssueStatus
+  priority: IssuePriority
+  executor: ID
+  executionTimeLimit: UnixTime
+  comment: String
+}
+
+type Mention {
+  id: ID!
+  documentId: ID!
+  textBounding: [TextBounding!]!
+  verifier: User!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  accessLevel: AccessLevel!
+}
+
+type MergedConcept {
+  concept: Concept!
+  mergeAuthor: User!
+  mergeDate: UnixTime!
+}
+
+type MergedConceptPagination {
+  total: Long!
+  listMergedConcept: [MergedConcept!]!
+}
+
+type Metrics {
+  countObjects: Int!
+  countEvents: Int!
+  countEntities: Int!
+  countNamedEntities: Int!
+  countDisambiguatedEntities: Int!
+  countLinks: Int!
+  countResearchMaps: Int!
+  countChildDocs: Int!
+  countTasks: Int!
+  countConcepts: Int!
+}
+
+type Mutation {
+  addConcept(form: ConceptMutationInput!, performanceControl: PerformSynchronously = {performSynchronously: true}, file: Upload): Concept!
+  addConceptLink(form: ConceptLinkCreationMutationInput!, performanceControl: PerformSynchronously = {performSynchronously: true}): ConceptLink!
+  updateConceptLink(form: ConceptLinkUpdateMutationInput!): ConceptLink!
+  addConceptProperty(form: ConceptPropertyCreateInput!, performanceControl: PerformSynchronously = {performSynchronously: true}): ConceptProperty!
+  addConceptLinkProperty(form: ConceptLinkPropertyInput!, performanceControl: PerformSynchronously = {performSynchronously: true}): ConceptProperty!
+  addConceptFact(id: ID!, fact: FactInput!, performanceControl: PerformSynchronously = {performSynchronously: true}): State!
+  deleteConceptFact(id: ID!): State!
+  addConceptLinkPropertyFact(id: ID!, fact: FactInput!, performanceControl: PerformSynchronously = {performSynchronously: true}): State!
+  deleteConceptLinkPropertyFact(id: ID!): State!
+  addConceptPropertyFact(id: ID!, fact: FactInput!, performanceControl: PerformSynchronously = {performSynchronously: true}): State!
+  deleteConceptPropertyFact(id: ID!): State!
+  addConceptLinkFact(id: ID!, fact: FactInput!, performanceControl: PerformSynchronously = {performSynchronously: true}): State!
+  deleteConceptLinkFact(id: ID!): State!
+  updateConcept(form: ConceptUpdateInput!, performanceControl: PerformSynchronously = {performSynchronously: true}): Concept!
+  updateConceptAvatar(id: ID!, documentId: ID!): Concept!
+  updateConceptProperty(form: ConceptPropertyUpdateInput!): ConceptProperty!
+  deleteConceptProperty(id: ID!): State!
+  deleteConceptLink(id: ID!): State!
+  deleteConcept(id: ID!): State!
+  deleteConceptLinkProperty(id: ID!): State!
+  mergeConcepts(form: ConceptMergeInput!): Concept!
+  unmergeConcepts(form: ConceptUnmergeInput!): Concept!
+  deleteFact(id: ID!): State!
+  normalizeValue(input: NormalizationInput!): [Value!]!
+  updateConceptSubscriptions(id: ID!, events: [ConceptUpdate!]!): Concept!
+  addConceptType(form: ConceptTypeCreationInput!, file: Upload): ConceptType!
+  addCompositeConceptType(form: CompositeConceptTypeCreationInput!): CompositeConceptType!
+  addCompositeConceptTypeWidgetType(form: CompositeConceptTypeWidgetTypeCreationInput!): CompositeConceptTypeWidgetType!
+  setConceptTypeDefaultView(form: CompositeConceptTypeViewInput!): State!
+  addConceptPropertyType(form: ConceptPropertyTypeCreationInput!): ConceptPropertyType!
+  addConceptLinkPropertyType(form: ConceptLinkPropertyTypeCreationInput!): ConceptPropertyType!
+  addConceptLinkType(form: ConceptLinkTypeCreationInput!): ConceptLinkType!
+  addConceptPropertyValueType(form: ConceptPropertyValueTypeCreationInput!): ConceptPropertyValueType!
+  addConceptTypeView(form: ConceptTypeViewCreationInput!): ConceptTypeView!
+  updateConceptType(form: ConceptTypeUpdateInput!, file: Upload): ConceptType!
+  updateCompositeConceptType(form: CompositeConceptTypeUpdateInput!): CompositeConceptType!
+  updateCompositeConceptTypeWidgetType(form: CompositeConceptTypeWidgetTypeUpdateInput!): CompositeConceptTypeWidgetType!
+  updateCompositeConceptTypeWidgetTypesOrder(form: CompositeConceptTypeWidgetTypeUpdateOrderInput!): State!
+  updateConceptPropertyType(form: ConceptPropertyTypeUpdateInput!): ConceptPropertyType!
+  updateConceptMainPropertyTypeOrder(form: InterestObjectMainPropertiesOrderUpdateInput!): ConceptType!
+  updateConceptLinkPropertyType(form: ConceptLinkPropertyTypeUpdateInput!): ConceptPropertyType!
+  updateConceptLinkType(form: ConceptLinkTypeUpdateInput!): ConceptLinkType!
+  updateConceptPropertyValueType(form: ConceptPropertyValueTypeUpdateInput!): ConceptPropertyValueType!
+  updateConceptTypeView(form: ConceptTypeViewUpdateInput!): ConceptTypeView!
+  deleteConceptTypeAvatar(id: ID!): ConceptType!
+  deleteConceptType(id: ID!): State!
+  deleteCompositeConceptType(id: ID!): State!
+  deleteCompositeConceptTypeWidgetType(id: ID!): State!
+  deleteConceptPropertyType(id: ID!): State!
+  deleteConceptLinkPropertyType(id: ID!): State!
+  deleteConceptLinkType(id: ID!): State!
+  deleteConceptPropertyValueType(id: ID!): State!
+  deleteConceptTypeView(id: ID!): State!
+  deleteBulk(ids: [ID!]!): [State]!
+  moveBulk(ids: [ID!]!, form: [Coordinate!]!): [ConceptType!]!
+  updateTypeSearchElement(form: TypeSearchElementUpdateInput!): State!
+  addCompositePropertyValueTemplate(form: CompositePropertyValueTemplateCreateInput!): CompositePropertyValueTemplate!
+  updateCompositePropertyValueTemplate(form: CompositePropertyValueTemplateCreateInput!): CompositePropertyValueTemplate!
+  deleteCompositePropertyValueTemplate(id: ID!): State!
+  addIssue(form: IssueCreationInput!): Issue!
+  deleteIssue(id: ID!): State!
+  addConceptToIssue(form: Concept2IssueInput!): Issue!
+  addDocumentToIssue(form: Document2IssueInput!): Issue!
+  addIssueToIssue(form: Issue2TaskInput!): Issue!
+  deleteDocumentFromIssue(form: Document2IssueInput!): Issue!
+  deleteConceptFromIssue(form: Concept2IssueInput!): Issue!
+  deleteIssueFromIssue(form: Issue2TaskInput!): Issue!
+  updateIssue(form: IssueEditFieldsInput!): Issue!
+  updateIssueMassive(form: MassUpdateIssueInput!): State!
+  addCommentToIssue(form: Comment2IssueInput!): IssueChange!
+  updateIssueComment(form: UpdateCommentInput!): IssueChange!
+  deleteIssueComment(id: ID!): State!
+  updateDocument(form: DocumentUpdateInput!): Document!
+  updateDocumentAvatar(form: DocumentAvatarUpdateInput!): Document!
+  removeCandidateFactFromDocument(form: DocumentDeleteCandidateFactInput!): Document!
+  removeAllKBFactsFromDocument(form: DocumentAllKBFactsRemoveInput!): State!
+  deleteDocuments(ids: [ID!]!): State!
+  addDocumentDouble(form: DocumentDoubleCreationInput!): State!
+  updateDocumentNode(form: DocumentNodeUpdateInput!): Document!
+  updateDocumentSubscriptions(id: ID!, events: [DocumentUpdate!]!): Document!
+  markDocumentAsRead(id: ID!): State!
+  markDocumentAsUnread(id: ID!): State!
+  deleteResearchMap(id: ID!): State!
+  bulkDeleteResearchMap(ids: [ID!]!): State!
+  addResearchMap(form: ResearchMapCreationInput!): ResearchMap!
+  addResearchMapFromFiles(files: [Upload]!): ResearchMapFromFilesType!
+  updateResearchMap(id: ID!, form: ResearchMapUpdateInput!): ResearchMap!
+  addContentOnResearchMap(id: ID!, form: ResearchMapContentAddInput!): ResearchMap!
+  deleteContentFromResearchMap(id: ID!, form: ResearchMapContentUpdateInput!): ResearchMap!
+  batchMoveNodesOnMap(id: ID!, form: ResearchMapBatchMoveInput!): ResearchMap!
+  batchUpdateGroupOnMap(id: ID!, form: ResearchMapBatchUpdateGroupInput!): ResearchMap!
+  addTopNeighborsOnMap(id: ID!, quantity: Int = 10, form: ResearchMapContentSelectInput!): ResearchMap!
+  addConceptFactNeighborsOnMap(id: ID!, conceptId: ID!): ResearchMap!
+  setResearchMapActive(id: ID!): ResearchMap!
+  findShortestPathOnMap(id: ID!, conceptNodeIds: ConceptAddImplicitLinkInput!): State!
+  findShortestImplicitPathOnMap(id: ID!, conceptNodeIds: ConceptAddImplicitLinkInput!): State!
+  addGroup(form: GroupCreationInput!): Group!
+  updateGroup(id: ID!, form: GroupUpdateInput!): Group!
+  deleteGroup(id: ID!): State!
+  createRedmineIssue(form: RedmineIssueCreationInput!): State!
+  updateRedmineIssue(form: RedmineIssueUpdateInput!): State!
+  unlinkIssues(form: RedmineIssueUnlinkInput!): State!
+  addAccessLevel(form: AccessLevelCreationInput!): AccessLevel!
+  updateAccessLevel(id: ID!, form: AccessLevelUpdateInput!): AccessLevel!
+  deleteAccessLevel(id: ID!): State!
+  addTemplateDocx(file: Upload): State!
+  updateMarkersBulk(form: BulkMarkersUpdateInput!): State!
+  addPlatform(form: PlatformCreationInput!, file: Upload): Platform!
+  updatePlatform(form: PlatformUpdateInput!, file: Upload): Platform!
+  deletePlatform(id: ID!): State!
+  addAccount(form: AccountCreationInput!, file: Upload): Account!
+  updateAccount(form: AccountUpdateInput!, file: Upload): Account!
+  deleteAccount(id: ID!): State!
+  addDocumentFeed(form: DocumentFeedCreationInput!): DocumentFeed!
+  updateDocumentFeed(id: ID!, form: DocumentFeedUpdateInput!): DocumentFeed!
+  addDocumentToDocumentFeedFavorites(documentFeedId: ID!, form: DocumentFeedUpdateDocumentsInput!): DocumentFeed!
+  deleteDocumentFromDocumentFeedFavorites(documentFeedId: ID!, form: DocumentFeedUpdateDocumentsInput!): DocumentFeed!
+  deleteDocumentFromDocumentFeed(documentFeedId: ID!, form: DocumentFeedUpdateDocumentsInput!): DocumentFeed!
+  restoreDocumentToDocumentFeed(documentFeedId: ID!, form: DocumentFeedUpdateDocumentsInput!): DocumentFeed!
+  deleteDocumentFeed(id: ID!): State!
+  updateConceptRegistryView(form: ConceptRegistryViewInput!): ConceptRegistryView!
+  updateDocumentRegistryView(form: DocumentRegistryViewInput!): DocumentRegistryView!
+  updateDocumentCardView(form: DocumentCardViewInput!): DocumentCardView!
+  addChart(form: ChartDescriptionInput!): Chart!
+  updateChart(id: ID!, form: ChartDescriptionInput!): Chart!
+  deleteChart(id: ID!): State!
+}
+
+type NamedValue {
+  id: ID!
+  propertyValueType: CompositePropertyValueType!
+  value: Value!
+}
+
+input NamedValueType {
+  name: String!
+  valueTypeId: ID!
+  view: ComponentView = value
+  isRequired: Boolean = true
+}
+
+type NERCRegexp {
+  regexp: String!
+  contextRegexp: String
+  autoCreate: Boolean
+}
+
+input NERCRegexpInput {
+  regexp: String!
+  contextRegexp: String
+  autoCreate: Boolean = false
+}
+
+input NodeMoveInput {
+  id: ID!
+  xCoordinate: Float!
+  yCoordinate: Float!
+}
+
+enum NodeType {
+  other
+  image
+  row
+  table
+  key
+  json
+  list
+  text
+  header
+}
+
+input NormalizationInput {
+  typeId: ID!
+  value: String!
+}
+
+type OutputLimiter {
+  maximumPoints: Long
+  minimumNumber: Long
+}
+
+input OutputLimiterInput {
+  maximumPoints: Long
+  minimumNumber: Long
+}
+
+type ParagraphMetadata {
+  pageId: Int
+  lineId: Int
+  originalText: String
+  hidden: Boolean
+  textTranslations: [Translation!]
+  paragraphType: NodeType!
+}
+
+type Parameter {
+  key: String!
+  value: String!
+}
+
+input ParameterInput {
+  key: String!
+  value: String!
+}
+
+type PdfSpecificMetadataGQL {
+  """Автор"""
+  author: String
+
+  """Дата создания"""
+  creationDate: UnixTime
+}
+
+input PerformSynchronously {
+  performSynchronously: Boolean = true
+}
+
+type Platform implements RecordInterface {
+  """key"""
+  id: ID!
+  name: String!
+  platformType: PlatformType!
+  url: String!
+  country: String
+  language: String
+  markers: [String!]!
+  params: [Parameter!]!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  image: Image
+  metric: PlatformStatistics!
+  period: DateTimeInterval!
+  accounts(offset: Int = 0, limit: Int = 20, filterSettings: AccountFilterSettings!, sortDirection: SortDirection = descending, sorting: AccountSorting = id): AccountPagination!
+  creator: User!
+  lastUpdater: User
+}
+
+input PlatformCreationInput {
+  name: String!
+  id: ID!
+  platformType: PlatformType!
+  url: String!
+  country: String
+  language: String
+  markers: [String!]
+  params: [ParameterInput!]
+}
+
+type PlatformFacet {
+  value: Platform!
+  count: Long!
+}
+
+input PlatformFilterSettings {
+  searchString: String
+  id: ID
+  platformType: PlatformType
+  markers: [String!]
+  country: [String!]
+  language: [String!]
+  creator: [ID!]
+  lastUpdater: [ID!]
+  registrationDate: TimestampInterval
+  updateDate: TimestampInterval
+}
+
+type PlatformPagination {
+  listPlatform: [Platform!]!
+  total: Int!
+}
+
+enum PlatformSorting {
+  lastUpdater
+  creator
+  systemUpdateDate
+  systemRegistrationDate
+  platformType
+  url
+  name
+  id
+}
+
+type PlatformStatistics {
+  countAccount: Int!
+  countDoc: Int!
+  countDocToday: Int!
+  countDocWeek: Int!
+  countDocMonth: Int!
+  recallDocToday: DocumentRecall!
+  recallDocWeek: DocumentRecall!
+  recallDocMonth: DocumentRecall!
+}
+
+enum PlatformType {
+  fileStorage
+  database
+  procurement
+  review
+  forum
+  newsAggregator
+  media
+  blog
+  messenger
+  socialNetwork
+}
+
+input PlatformUpdateInput {
+  platformId: ID!
+  name: String!
+  newId: ID!
+  platformType: PlatformType!
+  url: String!
+  country: String
+  language: String
+  markers: [String!]!
+  params: [ParameterInput!]!
+}
+
+input PropertyFilterSettings {
+  propertyTypeId: ID!
+  componentId: ID
+  propertyType: PropLinkOrConcept!
+  stringFilter: StringFilter
+  intFilter: IntervalInt
+  doubleFilter: IntervalDouble
+  dateTimeFilter: DateTimeIntervalInput
+  dateTimeIntervalFilter: DateTimeIntervalPairInput
+  geoFilter: GeoPointWithNameFormInput
+}
+
+enum PropLinkOrConcept {
+  link
+  concept
+}
+
+type Query {
+  document(id: ID!): Document
+  story(ids: [ID!]!): Story
+  paginationStory(limit: Int = 20, offset: Int = 0, grouping: DocumentGrouping = none, query: String, filterSettings: DocumentFilterSettings, direction: SortDirection = descending, sortField: DocumentSorting = score, extraSettings: ExtraSettings!): StoryPagination!
+  paginationDocumentMarkers(limit: Int = 20, offset: Int = 0, direction: SortDirection = descending): CommonStringPagination!
+  conceptType(id: ID!): ConceptType!
+  compositeConceptType(id: ID!): CompositeConceptType!
+  paginationCompositeConceptType(limit: Int = 20, offset: Int = 0, filterSettings: CompositeConceptTypeFilterSettings!, direction: SortDirection = descending, sortField: CompositeConceptTypeSorting = id): CompositeConceptTypePagination!
+  conceptPropertyType(id: ID!): ConceptPropertyType!
+  conceptLinkType(id: ID!): ConceptLinkType!
+  conceptPropertyValueType(id: ID!): ConceptPropertyValueType!
+  listConceptType: [ConceptType!]!
+  listUserMenuType: [UserMenuType!]!
+  listConceptPropertyType: [ConceptPropertyType!]!
+  listConceptPropertyTypeById(ids: [ID!]!): [ConceptPropertyType]!
+  listConceptLinkType: [ConceptLinkType!]!
+  listConceptPropertyValueType: [ConceptPropertyValueType!]!
+  paginationConceptType(limit: Int = 20, offset: Int = 0, filterSettings: ConceptTypeFilterSettings!, direction: SortDirection = descending, sortField: ConceptTypeSorting = id): ConceptTypePagination!
+  paginationConceptPropertyType(limit: Int = 20, offset: Int = 0, filterSettings: ConceptPropertyTypeFilterSettings!, direction: SortDirection = descending, sortField: ConceptPropertyTypeSorting = name): ConceptPropertyTypePagination!
+  paginationConceptLinkPropertyType(limit: Int = 20, offset: Int = 0, filterSettings: ConceptPropertyTypeFilterSettings!, direction: SortDirection = descending, sortField: ConceptPropertyTypeSorting = name): ConceptPropertyTypePagination!
+  paginationConceptLinkType(limit: Int = 20, offset: Int = 0, filterSettings: ConceptLinkTypeFilterSettings!, direction: SortDirection = descending, sortField: ConceptLinkTypeSorting = id): ConceptLinkTypePagination!
+  paginationConceptPropertyValueType(limit: Int = 20, offset: Int = 0, filterSettings: ConceptPropertyValueTypeFilterSettings!, direction: SortDirection = descending, sortField: ConceptPropertyValueTypeSorting = id): ConceptPropertyValueTypePagination!
+  compositeConceptPropertyType(id: ID!): ConceptPropertyType!
+  compositeLinkPropertyType(id: ID!): ConceptPropertyType!
+  listCompositeConceptPropertyType: [ConceptPropertyType!]!
+  listCompositeLinkPropertyType: [ConceptPropertyType!]!
+  paginationCompositeConceptPropertyType(limit: Int = 20, offset: Int = 0, filterSettings: CompositePropertyTypeFilterSettings!, direction: SortDirection = descending, sortField: CompositePropertyTypeSorting = name): ConceptPropertyTypePagination!
+  paginationCompositeLinkPropertyType(limit: Int = 20, offset: Int = 0, filterSettings: CompositePropertyTypeFilterSettings!, direction: SortDirection = descending, sortField: CompositePropertyTypeSorting = name): ConceptPropertyTypePagination!
+  compositePropertyValueTemplate(id: ID!): CompositePropertyValueTemplate!
+  listCompositePropertyValueTemplate: [CompositePropertyValueTemplate!]!
+  paginationCompositePropertyValueTemplate(limit: Int = 20, offset: Int = 0, filterSettings: CompositePropertyValueTemplateFilterSettings!, direction: SortDirection = descending, sortField: CompositePropertyValueTemplateSorting = id): CompositePropertyValueTemplatePagination!
+  conceptTypeView(id: ID!): ConceptTypeView!
+  domainMap: DomainMap!
+  concept(id: ID!): Concept
+  listConceptById(ids: [ID!]!): [Concept]!
+  paginationConcept(limit: Int = 20, offset: Int = 0, query: String, filterSettings: ConceptFilterSettings, direction: SortDirection = descending, sortField: ConceptSorting = score): ConceptPagination
+  compositeConcept(compositeConceptTypeId: ID!, rootConceptId: ID!): CompositeConcept!
+  paginationCompositeConcept(limit: Int = 20, offset: Int = 0, query: String, compositeConceptFilterSettings: CompositeConceptFilterSettings, direction: SortDirection = descending, sortField: ConceptSorting = score): CompositeConceptPagination!
+  listConceptLinkBetweenFixedConcepts(ids: [ID!]!, filterSettings: ConceptLinkFilterSettings!): [ConceptLink!]!
+  conceptProperty(id: ID!): ConceptProperty
+  conceptLink(id: ID!): ConceptLink!
+  paginationConceptLink(limit: Int = 20, offset: Int = 0, filterSettings: ConceptLinkFilterSettings!): ConceptLinkPagination!
+  paginationKBRelatedDocument(id: ID!, limit: Int = 20, offset: Int = 0, filterSettings: RelatedDocumentFilterSettings!, direction: SortDirection = descending, sortField: RelatedDocumentSorting = registrationDate): DocumentPagination
+  issue(id: ID!): Issue
+  paginationIssue(limit: Int = 20, offset: Int = 0, filterSettings: IssueFilterSettings!, direction: SortDirection = descending, sortField: IssueSorting = id): IssuePagination
+  paginationIssueChange(id: ID!, limit: Int = 20, offset: Int = 0): IssueChangePagination!
+  researchMap(id: ID!): ResearchMap!
+  paginationResearchMap(limit: Int = 20, offset: Int = 0, filterSettings: ResearchMapFilterSettings!, direction: SortDirection = descending, sortField: ResearchMapSorting = id): ResearchMapPagination!
+  activeResearchMap: ResearchMap
+  listTopNeighborsOnMap(id: ID!, form: ResearchMapContentSelectInput!, quantity: Int = 10): [ConceptWithNeighbors!]!
+  listLastResearchMap: [ResearchMap!]!
+  documentAutocomplete(destination: AutocompleteDocumentDestination!, query: String!): Autocomplete!
+  conceptAutocomplete(destination: AutocompleteConceptDestination!, query: String!): Autocomplete!
+  getOsmPlaceName(latitude: Float!, longitude: Float!): GeoPointValue!
+  getOsmCoordinates(name: String!): GeoPointValue!
+  getRedmineIssueCreationDefaultParameters(form: RedmineIssueDefaultParametersInput!): RedmineIssueCreationDefaultParameters!
+  getRedmineIssueUpdateDefaultDescription(form: RedmineIssueDefaultParametersInput!): String!
+  searchSimilarRedmineIssues(id: ID!): RedmineIssuePagination!
+  accessLevel(id: ID!): AccessLevel!
+  paginationAccessLevel(query: String, limit: Int = 20, offset: Int = 0, direction: SortDirection = descending, sortField: AccessLevelSorting = id): AccessLevelPagination!
+  storyFs2Query(filterSettings: DocumentFilterSettings!, extraSettings: ExtraSettings!): String!
+  conceptFs2Query(filterSettings: ConceptFilterSettings!): String!
+  markersBulk(form: BulkMarkersInput!): [Markers]!
+  platform(id: ID!): Platform!
+  listPlatformById(ids: [ID!]!): [Platform!]!
+  paginationPlatform(limit: Int = 20, offset: Int = 0, filterSettings: PlatformFilterSettings!, direction: SortDirection = descending, sortField: PlatformSorting = id): PlatformPagination!
+  account(id: ID!): Account!
+  listAccountById(ids: [ID!]!): [Account!]!
+  paginationAccount(limit: Int = 20, offset: Int = 0, filterSettings: AccountFilterSettings!, direction: SortDirection = descending, sortField: AccountSorting = id): AccountPagination!
+  paginationCountry(filterSettings: CountryFilterSettings!, limit: Int = 20, offset: Int = 0): CountryPagination!
+  paginationLanguage(filterSettings: LanguageFilterSettings!, limit: Int = 20, offset: Int = 0): LanguagePagination!
+  documentFeed(id: ID!): DocumentFeed!
+  paginationDocumentFeed(limit: Int = 20, offset: Int = 0, filterSettings: DocumentFeedFilterSettings!, direction: SortDirection = descending, sortField: DocumentFeedSorting = id): DocumentFeedPagination!
+  conceptRegistryView: ConceptRegistryView!
+  documentRegistryView: DocumentRegistryView!
+  documentCardView: DocumentCardView!
+  chart(id: ID!): Chart!
+  previewChart(form: ChartDescriptionInput!): Chart!
+}
+
+"""common part of all records"""
+interface RecordInterface {
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  creator: User!
+  lastUpdater: User
+}
+
+type RedmineIssue {
+  id: ID!
+  subject: String!
+  tracker: RedmineTracker!
+  status: RedmineStatus!
+  priority: RedminePriority!
+  author: String!
+  assignee: String!
+  creationDate: Long!
+}
+
+type RedmineIssueCreationDefaultParameters {
+  subject: String!
+  description: String!
+  users: [RedmineUser!]!
+  trackers: [RedmineTracker!]!
+
+  """all statuses; workflow restricted statuses are included"""
+  statuses: [RedmineStatus!]!
+  priorities: [RedminePriority!]!
+}
+
+input RedmineIssueCreationInput {
+  """conceptIds or documentIds"""
+  objIds: [ID!]!
+
+  """depends on objectId type"""
+  issueType: RedmineIssueType!
+  subject: String!
+  assigneeId: ID!
+  trackerId: ID!
+
+  """
+  if statusId is prohibited by workflow, correct value will be set automatically
+  """
+  statusId: ID!
+  priorityId: ID!
+  dueTo: Long
+  description: String = ""
+  relatedIssues: [ID!] = []
+}
+
+input RedmineIssueDefaultParametersInput {
+  """conceptIds or documentIds"""
+  objIds: [ID!]!
+
+  """depends on objectId type"""
+  issueType: RedmineIssueType!
+}
+
+type RedmineIssuePagination {
+  listRedmineIssue: [RedmineIssue!]!
+  total: Int!
+}
+
+enum RedmineIssueType {
+  document
+  concept
+}
+
+input RedmineIssueUnlinkInput {
+  """conceptId or documentId"""
+  objectId: ID!
+
+  """depends on objectId type"""
+  issueType: RedmineIssueType!
+  issueIds: [ID!]!
+}
+
+input RedmineIssueUpdateInput {
+  """conceptId or documentId"""
+  objIds: [ID!]!
+
+  """depends on objectId type"""
+  issueType: RedmineIssueType!
+  issueIds: [ID!]!
+  description: String!
+}
+
+type RedminePriority {
+  id: ID!
+  name: String!
+}
+
+type RedmineStatus {
+  id: ID!
+  name: String!
+}
+
+type RedmineTracker {
+  id: ID!
+  name: String!
+}
+
+type RedmineUser {
+  id: ID!
+  fullName: String!
+}
+
+input RegexpToUpdate {
+  regexpToReplace: NERCRegexpInput
+  regexpToInsert: NERCRegexpInput
+}
+
+input RelatedDocumentFilterSettings {
+  documentType: DocumentType
+  publicationDate: TimestampInterval
+  registrationDate: TimestampInterval
+  updateDate: TimestampInterval
+}
+
+enum RelatedDocumentSorting {
+  updateDate
+  registrationDate
+  publicationDate
+}
+
+type RelExtModel {
+  sourceAnnotationType: String!
+  targetAnnotationType: String!
+  relationType: String!
+  invertDirection: Boolean!
+}
+
+input RelExtModelInput {
+  sourceAnnotationType: String!
+  targetAnnotationType: String!
+  relationType: String!
+  invertDirection: Boolean!
+}
+
+type ResearchMap implements RecordInterface {
+  id: ID!
+  name: String!
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  description: String
+  isTemporary: Boolean!
+  markers: [String!]!
+  listNode(filterSettings: MapNodeFilterSettings, defaultView: Boolean = true): [MapNode!]!
+  listEdge(filterSettings: MapEdgeFilterSettings, defaultView: Boolean = true): [MapEdge!]!
+  researchMapStatistics: ResearchMapStatistics!
+  listGroup: [Group!]!
+  isActive: Boolean!
+  accessLevel: AccessLevel!
+  paginationConcept(limit: Int = 20, offset: Int = 0, query: String, filterSettings: ConceptFilterSettings, direction: SortDirection = descending, sortField: ConceptSorting, extraSettings: ConceptExtraSettings!): ConceptPagination!
+  paginationStory(limit: Int = 20, offset: Int = 0, grouping: DocumentGrouping = none, query: String, filterSettings: DocumentFilterSettings, direction: SortDirection = descending, sortField: DocumentSorting, extraSettings: ExtraSettings!): StoryPagination!
+  paginationResearchMap(limit: Int = 20, offset: Int = 0, filterSettings: ResearchMapFilterSettings!, direction: SortDirection = descending, sortField: ResearchMapSorting = conceptAndDocumentLink, ResearchMapContentSelectInput: ResearchMapContentUpdateInput): ResearchMapPagination!
+  creator: User!
+  lastUpdater: User
+}
+
+input ResearchMapBatchMoveInput {
+  nodeMoveInput: [NodeMoveInput!]!
+}
+
+input ResearchMapBatchUpdateGroupInput {
+  nodeIds: [ID!] = []
+  groupId: ID
+}
+
+type ResearchMapChangedEvent {
+  eventName: String!
+  researchMap: ResearchMap!
+}
+
+input ResearchMapContentAddInput {
+  documents: [DocumentAddInputInput!] = []
+  concepts: [ConceptAddInputInput!] = []
+  conceptCandidates: [ConceptCandidateAddInputInput!] = []
+}
+
+input ResearchMapContentSelectInput {
+  """ids of nodes you want to add/remove/select from map"""
+  nodes: [ID!] = []
+}
+
+input ResearchMapContentUpdateInput {
+  """ids of nodes you want to add/remove/select from map"""
+  nodes: [ID!] = []
+}
+
+input ResearchMapCreationInput {
+  name: String = ""
+  concepts: [ID!] = []
+  documents: [ID!] = []
+  description: String
+  accessLevelId: ID = 1
+  markers: [String!] = []
+}
+
+input ResearchMapFilterSettings {
+  name: String
+  description: String
+  accessLevelId: ID
+  creator: [ID!]
+  lastUpdater: [ID!]
+  markers: [String!]
+  creationDate: TimestampInterval
+  updateDate: TimestampInterval
+  conceptId: ID
+}
+
+type ResearchMapFromFilesType {
+  researchMaps: [ResearchMap!]!
+  info: [State]!
+}
+
+type ResearchMapPagination {
+  total: Int!
+  listResearchMap: [ResearchMap!]!
+}
+
+enum ResearchMapSorting {
+  conceptAndDocumentLink
+  documentLink
+  conceptLink
+  lastUpdater
+  creator
+  systemUpdateDate
+  systemRegistrationDate
+  accessLevel
+  name
+  id
+}
+
+type ResearchMapStatistics {
+  objectNum: Int!
+  eventNum: Int!
+  documentNum: Int!
+  conceptNum: Int!
+  conceptAndDocumentNum: Int!
+}
+
+input ResearchMapUpdateInput {
+  name: String!
+  description: String
+  accessLevelId: ID!
+  markers: [String!] = []
+}
+
+input SearchElementToUpdate {
+  dict: WordsToUpdate
+  regexp: RegexpToUpdate
+}
+
+enum SortDirection {
+  ascending
+  descending
+}
+
+type State {
+  isSuccess: Boolean!
+}
+
+type Story {
+  id: ID!
+  title: String
+  systemRegistrationDate: UnixTime!
+  systemUpdateDate: UnixTime
+  main: Document!
+  listDocument: [Document!]!
+  highlighting: Highlighting
+  countDoc: Int!
+  preview: String!
+  accessLevel: AccessLevel!
+}
+
+type StoryPagination {
+  listStory: [Story!]!
+  total: Int!
+  showTotal: Int!
+  listNamedEntityCountFacet: [Facet!]!
+  listConceptCountFacet: [Facet!]!
+  listAccountCountFacet: [AccountFacet!]!
+  listPlatformCountFacet: [PlatformFacet!]!
+  listMarkers: [Facet!]!
+  sources: Int!
+  newDocumentsToday: Int!
+}
+
+input StringFilter {
+  str: String!
+}
+
+type StringLocaleValue {
+  value: String!
+  locale: Locale!
+}
+
+input StringLocaleValueInput {
+  value: String!
+  locale: Locale!
+}
+
+type StringValue {
+  value: String!
+}
+
+input StringValueInput {
+  value: String!
+}
+
+type Subscription {
+  researchMapChanged(id: ID!): ResearchMapChangedEvent!
+}
+
+type Table {
+  cells: [[String!]!]!
+  metadata: TableMetadata!
+}
+
+type TableMetadata {
+  pageId: Int
+}
+
+type TextBounding {
+  start: Int!
+  end: Int!
+  nodeId: String!
+}
+
+input TextBoundingInput {
+  start: Int!
+  end: Int!
+  nodeId: String!
+}
+
+type Time {
+  hour: Int!
+  minute: Int!
+  second: Int!
+}
+
+input TimeInput {
+  hour: Int!
+  minute: Int!
+  second: Int!
+}
+
+input TimestampInterval {
+  start: UnixTime
+  end: UnixTime
+}
+
+type Translation {
+  text: String!
+  language: Language!
+}
+
+input TranslationInput {
+  language: LanguageInput!
+  text: String!
+}
+
+enum TrustLevel {
+  high
+  medium
+  low
+}
+
+union TypeSearchElement = DictValue | NERCRegexp
+
+input TypeSearchElementUpdateInput {
+  id: ID!
+  elementsType: ElementType!
+  searchElementToUpdate: [SearchElementToUpdate!]!
+}
+
+scalar UnixTime
+
+input UpdateCommentInput {
+  taskChangeId: ID!
+  comment: String!
+}
+
+scalar Upload
+
+type User {
+  id: ID!
+}
+
+union UserMenuType = ConceptType | CompositeConceptType | ConceptTypeView
+
+union Value = DateTimeValue | GeoPointValue | IntValue | DoubleValue | StringLocaleValue | StringValue | LinkValue
+
+input ValueInput {
+  stringValueInput: StringValueInput
+  stringLocaleValueInput: StringLocaleValueInput
+  intValueInput: IntValueInput
+  doubleValueInput: DoubleValueInput
+  geoPointValueInput: GeoPointInput
+  dateTimeValueInput: DateTimeValueInput
+  linkValueInput: LinkValueInput
+}
+
+enum ValueType {
+  Link
+  Double
+  StringLocale
+  Geo
+  Date
+  Int
+  String
+}
+
+enum WidgetTypeTableType {
+  vertical
+  horizontal
+}
+
+input WordsToUpdate {
+  wordToReplace: String
+  wordToInsert: String
+}

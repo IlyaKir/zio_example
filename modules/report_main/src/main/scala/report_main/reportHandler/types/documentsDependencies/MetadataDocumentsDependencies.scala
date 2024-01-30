@@ -1,0 +1,6 @@
+package report_main.reportHandler.types.documentsDependencies
+
+import report_main.reportHandler.types.parsedExcel.metadataExcel.document.MetadataExcelDocument
+import report_main.reportHandler.utils.DocumentId
+
+case class MetadataDocumentsDependencies(documentId2Metadata: Map[DocumentId, MetadataExcelDocument])

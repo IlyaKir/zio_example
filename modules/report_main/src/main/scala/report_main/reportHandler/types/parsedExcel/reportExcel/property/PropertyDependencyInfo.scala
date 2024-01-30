@@ -1,0 +1,5 @@
+package report_main.reportHandler.types.parsedExcel.reportExcel.property
+
+import report_main.reportHandler.types.parsedExcel.reportExcel.document.ReportExcelSinglePathDocument
+
+case class PropertyDependencyInfo(documents: List[ReportExcelSinglePathDocument])

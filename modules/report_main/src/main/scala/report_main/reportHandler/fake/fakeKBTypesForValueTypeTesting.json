@@ -1,0 +1,60 @@
+{
+  "listConceptType": [
+    {
+      "id": "10000",
+      "name": "TestPropertyValueTypeConcept",
+      "listConceptPropertyType": [
+        {
+          "id": "10001",
+          "name": "Строка",
+          "valueType": {
+            "valueType": "String"
+          }
+        },
+        {
+          "id": "10002",
+          "name": "Строка с указанием языка",
+          "valueType": {
+            "valueType": "StringLocale"
+          }
+        },
+        {
+          "id": "10003",
+          "name": "Ссылка",
+          "valueType": {
+            "valueType": "Link"
+          }
+        },
+        {
+          "id": "10004",
+          "name": "Геолокация",
+          "valueType": {
+            "valueType": "Geo"
+          }
+        },
+        {
+          "id": "10005",
+          "name": "Число",
+          "valueType": {
+            "valueType": "Int"
+          }
+        },
+        {
+          "id": "10006",
+          "name": "Число с плавающей точкой",
+          "valueType": {
+            "valueType": "Double"
+          }
+        },
+        {
+          "id": "10007",
+          "name": "Дата",
+          "valueType": {
+            "valueType": "Date"
+          }
+        }
+      ],
+      "listConceptLinkType": []
+    }
+  ]
+}
