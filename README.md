@@ -1,7 +1,20 @@
 Example of my code extracted from the rest of the project logic from my last job for demonstration purposes. Main logic is in the `report_main` module
 
 Technologies that I used to provide solution:
-ZIO 1.0, ZLayers, ZIOMagic, ZManaged, ZIOFibers, ZIOSemaphors, ZIOActors, ZIOCaliban (GraphQL), S3 (MinIO), Apache POI, JWT, CharDetector, ZIOJson, ZIOTest
+- ZIO 1.0
+- ZLayers
+- ZIOMagic
+- ZManaged
+- ZIOFibers
+- ZIOSemaphors
+- ZIOActors
+- ZIOCaliban (GraphQL)
+- S3 (MinIO)
+- Apache POI
+- JWT
+- CharDetector
+- ZIOJson
+- ZIOTest
 
 Note: there is no possibility to check the full operation of the service, as the operation depends on other services and input data (zip archive)
 
